@@ -2,30 +2,44 @@
 
 namespace aportela\MediaWikiWrapper\Wikipedia;
 
-class Page extends \aportela\MediaWikiWrapper\Page
+class Page extends \aportela\MediaWikiWrapper\API
 {
+    const REST_API_PAGE_HTML = "https://en.wikipedia.org/w/rest.php/v1/page/%s/html";
+    /*
+    const REST_API_PAGE_SOURCE = "https://en.wikipedia.org/w/rest.php/v1/page/Jupiter";
+    const REST_API_PAGE_OFFLINE = "https://en.wikipedia.org/w/rest.php/v1/page/Jupiter/with_html";
+    const REST_API_PAGE_LINKS_LANGUAGES = "https://en.wikipedia.org/w/rest.php/v1/page/Jupiter/links/language";
+    const REST_API_PAGE_LINKS_FILES = "https://en.wikipedia.org/w/rest.php/v1/page/Jupiter/links/media";
+    */
 
-    const HTML_BASE_API_URL = "https://api.wikimedia.org/core/v1/wikipedia/en/page/%s/html";
+    protected ?string $title;
+
+    public function setTitle(string $title)
+    {
+        $this->title = rawurlencode($title);
+    }
 
     public function getHTML(): string
     {
-        $url = sprintf(self::HTML_BASE_API_URL, urlencode($this->title));
-        $this->logger->debug("MediaWikiWrapper\Wikipedia\Page::get", array("title" => $this->title));
-        $response = $this->http->GET($url);
-        if ($response->code == 200) {
-            return ($response->body);
-        } else {
-            $json = json_decode($response->body);
-            if (json_last_error() != JSON_ERROR_NONE) {
-                throw new \aportela\MediaWikiWrapper\Exception\InvalidAPIFormatException("");
-            }
-            switch ($json->httpCode) {
-                case 404:
-                    throw new \aportela\MediaWikiWrapper\Exception\NotFoundException($this->title);
-                    break;
-                default:
-                    throw new \aportela\MediaWikiWrapper\Exception\HTTPException("title:" . $this->title, $json->httpCode);
-                    break;
+        if (!empty($this->title)) {
+            $url = sprintf(self::REST_API_PAGE_HTML, $this->title);
+            $this->logger->debug("MediaWikiWrapper\Wikipedia\Page::getHTML", array("title" => $this->title));
+            $response = $this->http->GET($url);
+            if ($response->code == 200) {
+                return ($response->body);
+            } else {
+                $json = json_decode($response->body);
+                if (json_last_error() != JSON_ERROR_NONE) {
+                    throw new \aportela\MediaWikiWrapper\Exception\InvalidAPIFormatException(json_last_error_msg());
+                }
+                switch ($json->httpCode) {
+                    case 404:
+                        throw new \aportela\MediaWikiWrapper\Exception\NotFoundException($this->title);
+                        break;
+                    default:
+                        throw new \aportela\MediaWikiWrapper\Exception\HTTPException($this->title, $json->httpCode);
+                        break;
+                }
             }
         }
     }
