@@ -3,6 +3,7 @@
     <testsuites>
         <testsuite name="remote-thumbnail-cache-wrapper-test-suite">
             <file>src/Test/Wikipedia/PageTest.php</file>
+            <file>src/Test/Wikipedia/FileTest.php</file>
         </testsuite>
     </testsuites>
 </phpunit>

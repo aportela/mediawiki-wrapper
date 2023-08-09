@@ -4,51 +4,22 @@ namespace aportela\MediaWikiWrapper\Test\Wikipedia;
 
 require_once dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . "autoload.php";
 
-class PageTest extends \PHPUnit\Framework\TestCase
+class PageTest extends BaseTest
 {
-    protected static $logger;
-
-    /**
-     * Called once just like normal constructor
-     */
-    public static function setUpBeforeClass(): void
+    public function testGetHTML(): void
     {
-        self::$logger = new \Psr\Log\NullLogger("");
+        $p = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\APIType::REST);
+        $p->setTitle("Jupiter");
+        $this->assertIsString($p->getHTML());
     }
 
-    /**
-     * Initialize the test case
-     * Called for every defined test
-     */
-    public function setUp(): void
-    {
-    }
-
-    /**
-     * Clean up the test case, called for every defined test
-     */
-    public function tearDown(): void
-    {
-    }
-
-    /**
-     * Clean up the whole test class
-     */
-    public static function tearDownAfterClass(): void
-    {
-    }
-
-    public function testExistentHTML(): void
-    {
-        $f = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, "Iron_Maiden");;
-        $this->assertIsString($f->getHTML());
-    }
-
-    public function testNonExistentHTML(): void
+    public function testGetHTMLNotFound(): void
     {
         $this->expectException(\aportela\MediaWikiWrapper\Exception\NotFoundException::class);
-        $this->expectExceptionMessage("Iron_Maiden2");
-        $f = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, "Iron_Maiden2");;
-        $f->getHTML();
+        $page = "Jupiter" . time() . time();
+        $this->expectExceptionMessage(rawurlencode($page));
+        $p = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\APIType::REST);
+        $p->setTitle($page);
+        $p->getHTML();
     }
 }
