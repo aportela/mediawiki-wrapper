@@ -1,6 +1,6 @@
 <?php
 
-namespace aportela\LastFMWrapper\Exception;
+namespace aportela\MediaWikiWrapper\Exception;
 
 class InvalidAPIFormatException extends \Exception
 {
