@@ -10,7 +10,6 @@ class PageTest extends BaseTest
     {
         $p = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\APIType::REST);
         $p->setTitle("Jupiter");
-        $p->setURL("https://en.wikipedia.org/wiki/Iron_Maiden");
         $this->assertIsString($p->getHTML());
     }
 
