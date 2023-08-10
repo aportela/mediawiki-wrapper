@@ -27,6 +27,8 @@ class Page extends \aportela\MediaWikiWrapper\API
             $totalFields = count($fields);
             if ($totalFields == 3 && $fields[1] == "wiki") {
                 $this->title = $fields[2];
+            } else {
+                throw new \aportela\MediaWikiWrapper\Exception\InvalidURLException($url);
             }
         } else {
             throw new \aportela\MediaWikiWrapper\Exception\InvalidURLException($url);
