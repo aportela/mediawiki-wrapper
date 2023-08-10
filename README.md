@@ -9,7 +9,7 @@ Custom mediawiki api wrapper
 
 ## Limitations
 
-At this time only Wikipedia english pages are supported, also files
+At this time only Wikipedia & Wikidata english pages are supported, also files
 
 ## Install (composer) dependencies:
 
