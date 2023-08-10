@@ -13,6 +13,22 @@ class Item extends \aportela\MediaWikiWrapper\API
         $this->item = $item;
     }
 
+    public function setURL(string $url)
+    {
+        $urlFields = parse_url($url);
+        if (is_array($urlFields) && $urlFields["host"] == "www.wikidata.org") {
+            $fields = explode("/", $urlFields["path"]);
+            $totalFields = count($fields);
+            if ($totalFields == 3 && $fields[1] == "wiki") {
+                $this->item = $fields[2];
+            } else {
+                throw new \aportela\MediaWikiWrapper\Exception\InvalidURLException($url);
+            }
+        } else {
+            throw new \aportela\MediaWikiWrapper\Exception\InvalidURLException($url);
+        }
+    }
+
     public function getWikipediaTitle(\aportela\MediaWikiWrapper\Language $language): string
     {
         if (!empty($this->item)) {
