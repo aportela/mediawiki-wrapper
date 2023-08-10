@@ -19,6 +19,20 @@ class Page extends \aportela\MediaWikiWrapper\API
         $this->title = rawurlencode($title);
     }
 
+    public function setURL(string $url)
+    {
+        $urlFields = parse_url($url);
+        if (is_array($urlFields) && $urlFields["host"] == "en.wikipedia.org") {
+            $fields = explode("/", $urlFields["path"]);
+            $totalFields = count($fields);
+            if ($totalFields == 3 && $fields[1] == "wiki") {
+                $this->title = $fields[2];
+            }
+        } else {
+            throw new \aportela\MediaWikiWrapper\Exception\InvalidURLException($url);
+        }
+    }
+
     public function getHTML(): string
     {
         if (!empty($this->title)) {
