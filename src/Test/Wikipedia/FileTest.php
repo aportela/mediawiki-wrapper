@@ -13,6 +13,13 @@ class FileTest extends BaseTest
         $this->assertTrue($f->get());
     }
 
+    public function testGetMissingTitle(): void
+    {
+        $this->expectException(\aportela\MediaWikiWrapper\Exception\InvalidTitleException::class);
+        $f = new \aportela\MediaWikiWrapper\Wikipedia\File(self::$logger, \aportela\MediaWikiWrapper\APIType::REST);
+        $this->assertIsString($f->get());
+    }
+
     public function testGetNotFound(): void
     {
         $this->expectException(\aportela\MediaWikiWrapper\Exception\NotFoundException::class);

@@ -57,6 +57,8 @@ class Page extends \aportela\MediaWikiWrapper\API
                         break;
                 }
             }
+        } else {
+            throw new \aportela\MediaWikiWrapper\Exception\InvalidTitleException("");
         }
     }
 }

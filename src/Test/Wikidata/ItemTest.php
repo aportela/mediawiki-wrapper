@@ -13,6 +13,13 @@ class ItemTest extends BaseTest
         $this->assertEquals($i->getWikipediaTitle(\aportela\MediaWikiWrapper\Language::ENGLISH), "Jupiter");
     }
 
+    public function testGetWikipediaTitleFromItemMissingItem(): void
+    {
+        $this->expectException(\aportela\MediaWikiWrapper\Exception\InvalidItemException::class);
+        $i = new \aportela\MediaWikiWrapper\Wikidata\Item(self::$logger, \aportela\MediaWikiWrapper\APIType::REST);
+        $i->getWikipediaTitle(\aportela\MediaWikiWrapper\Language::ENGLISH);
+    }
+
     public function testGetWikipediaTitleFromURL(): void
     {
         $i = new \aportela\MediaWikiWrapper\Wikidata\Item(self::$logger, \aportela\MediaWikiWrapper\APIType::REST);

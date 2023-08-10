@@ -13,6 +13,13 @@ class PageTest extends BaseTest
         $this->assertIsString($p->getHTML());
     }
 
+    public function testGetHTMLMissingTitle(): void
+    {
+        $this->expectException(\aportela\MediaWikiWrapper\Exception\InvalidTitleException::class);
+        $p = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\APIType::REST);
+        $this->assertIsString($p->getHTML());
+    }
+
     public function testGetHTMLFromURL(): void
     {
         $p = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\APIType::REST);

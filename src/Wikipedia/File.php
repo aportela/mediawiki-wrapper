@@ -73,6 +73,8 @@ class File extends \aportela\MediaWikiWrapper\API
                     }
                 }
             }
+        } else {
+            throw new \aportela\MediaWikiWrapper\Exception\InvalidTitleException("");
         }
     }
 
