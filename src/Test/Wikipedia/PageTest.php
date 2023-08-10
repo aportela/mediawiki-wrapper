@@ -21,6 +21,16 @@ class PageTest extends BaseTest
         $this->assertIsString($p->getHTML());
     }
 
+    public function testGetHTMLFromWikipediaInvalidURL(): void
+    {
+        $url = "https://en.wikipedia.org/wiki_NOT_FOUND/Jupiter";
+        $this->expectException(\aportela\MediaWikiWrapper\Exception\InvalidURLException::class);
+        $this->expectExceptionMessage($url);
+        $p = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\APIType::REST);
+        $p->setURL($url);
+        $this->assertIsString($p->getHTML());
+    }
+
     public function testGetHTMLFromInvalidURL(): void
     {
         $url = "https://www.google.es";
