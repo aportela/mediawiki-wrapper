@@ -2,6 +2,7 @@
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" bootstrap="vendor/autoload.php" backupGlobals="false" backupStaticProperties="false" colors="true" processIsolation="false" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.3/phpunit.xsd">
     <testsuites>
         <testsuite name="remote-thumbnail-cache-wrapper-test-suite">
+            <file>src/Test/Wikidata/ItemTest.php</file>
             <file>src/Test/Wikipedia/PageTest.php</file>
             <file>src/Test/Wikipedia/FileTest.php</file>
         </testsuite>
