@@ -37,7 +37,7 @@ class FileTest extends BaseTest
         $this->assertTrue($f->get());
         $url = $f->getURL(\aportela\MediaWikiWrapper\FileInformationType::PREFERRED);
         $this->assertNotEmpty($url);
-        $this->assertTrue(filter_var($url, FILTER_VALIDATE_URL) !== FALSE);
+        $this->assertTrue(filter_var($url, FILTER_VALIDATE_URL) !== false);
     }
 
     public function testGETURLOriginal(): void
@@ -47,7 +47,7 @@ class FileTest extends BaseTest
         $this->assertTrue($f->get());
         $url = $f->getURL(\aportela\MediaWikiWrapper\FileInformationType::ORIGINAL);
         $this->assertNotEmpty($url);
-        $this->assertTrue(filter_var($url, FILTER_VALIDATE_URL) !== FALSE);
+        $this->assertTrue(filter_var($url, FILTER_VALIDATE_URL) !== false);
     }
 
     public function testGETURLThumbnail(): void
@@ -57,6 +57,6 @@ class FileTest extends BaseTest
         $this->assertTrue($f->get());
         $url = $f->getURL(\aportela\MediaWikiWrapper\FileInformationType::THUMBNAIL);
         $this->assertNotEmpty($url);
-        $this->assertTrue(filter_var($url, FILTER_VALIDATE_URL) !== FALSE);
+        $this->assertTrue(filter_var($url, FILTER_VALIDATE_URL) !== false);
     }
 }

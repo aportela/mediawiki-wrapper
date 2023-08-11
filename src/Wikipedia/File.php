@@ -4,7 +4,7 @@ namespace aportela\MediaWikiWrapper\Wikipedia;
 
 class File extends \aportela\MediaWikiWrapper\API
 {
-    const REST_API_FILE_GET = "https://commons.wikimedia.org/w/rest.php/v1/file/File:%s";
+    public const REST_API_FILE_GET = "https://commons.wikimedia.org/w/rest.php/v1/file/File:%s";
 
     protected ?string $title;
 

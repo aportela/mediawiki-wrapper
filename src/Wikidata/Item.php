@@ -4,7 +4,7 @@ namespace aportela\MediaWikiWrapper\Wikidata;
 
 class Item extends \aportela\MediaWikiWrapper\API
 {
-    const REST_API_GET_WIKIPEDIA_TITLE = "https://www.wikidata.org/w/api.php?action=wbgetentities&format=json&props=sitelinks&ids=%s&sitefilter=%swiki";
+    public const REST_API_GET_WIKIPEDIA_TITLE = "https://www.wikidata.org/w/api.php?action=wbgetentities&format=json&props=sitelinks&ids=%s&sitefilter=%swiki";
 
     protected ?string $item;
 

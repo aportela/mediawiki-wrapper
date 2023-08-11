@@ -4,7 +4,7 @@ namespace aportela\MediaWikiWrapper\Wikipedia;
 
 class Page extends \aportela\MediaWikiWrapper\API
 {
-    const REST_API_PAGE_HTML = "https://en.wikipedia.org/w/rest.php/v1/page/%s/html";
+    public const REST_API_PAGE_HTML = "https://en.wikipedia.org/w/rest.php/v1/page/%s/html";
     /*
     const REST_API_PAGE_SOURCE = "https://en.wikipedia.org/w/rest.php/v1/page/Jupiter";
     const REST_API_PAGE_OFFLINE = "https://en.wikipedia.org/w/rest.php/v1/page/Jupiter/with_html";
