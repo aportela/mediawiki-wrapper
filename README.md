@@ -13,13 +13,13 @@ At this time only Wikipedia & Wikidata english pages are supported, also files
 
 ## Install (composer) dependencies:
 
-```
+```Shell
 composer require aportela/mediawiki-wrapper
 ```
 
 ## Code example:
 
-```
+```php
 <?php
 
     require "vendor/autoload.php";
