@@ -1,40 +1,40 @@
 {
-    "name": "aportela/mediawiki-wrapper",
-    "description": "Custom mediawiki api wrapper",
-    "type": "library",
-    "license": "AGPL-3.0-only",
-    "authors": [
-        {
-            "name": "alex",
-            "email": "766f6964+github@gmail.com"
-        }
-    ],
-    "homepage": "https://github.com/aportela/mediawiki-wrapper",
-    "autoload": {
-        "psr-4": {
-            "aportela\\MediaWikiWrapper\\": "src"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "aportela\\MediaWikiWrapper\\Test\\": "Test"
-        }
-    },
-    "config": {
-        "sort-packages": true
-    },
-    "require": {
-        "php": ">=8.1",
-        "aportela/httprequest-wrapper": "^2.0"
-    },
-    "require-dev": {
-        "friendsofphp/php-cs-fixer": "^3.45",
-        "phpstan/phpstan": "^1.10",
-        "phpunit/phpunit": "^10.5"
-    },
-    "scripts": {
-        "test": "vendor/bin/phpunit --testdox",
-        "fix" : "vendor/bin/php-cs-fixer fix src",
-        "stan": "vendor/bin/phpstan analyse -c phpstan.neon"
+  "name": "aportela/mediawiki-wrapper",
+  "description": "Custom mediawiki api wrapper",
+  "type": "library",
+  "license": "AGPL-3.0-only",
+  "authors": [
+    {
+      "name": "alex",
+      "email": "766f6964+github@gmail.com"
     }
+  ],
+  "homepage": "https://github.com/aportela/mediawiki-wrapper",
+  "autoload": {
+    "psr-4": {
+      "aportela\\MediaWikiWrapper\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "aportela\\MediaWikiWrapper\\Test\\": "Test"
+    }
+  },
+  "config": {
+    "sort-packages": true
+  },
+  "require": {
+    "php": ">=8.4",
+    "aportela/httprequest-wrapper": "^2.0"
+  },
+  "require-dev": {
+    "friendsofphp/php-cs-fixer": "^3.88",
+    "phpstan/phpstan": "^2.1",
+    "phpunit/phpunit": "^10.5"
+  },
+  "scripts": {
+    "test": "vendor/bin/phpunit --testdox",
+    "fix": "vendor/bin/php-cs-fixer fix src",
+    "stan": "vendor/bin/phpstan analyse -c phpstan.neon"
+  }
 }
