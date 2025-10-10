@@ -12,7 +12,7 @@ class File extends \aportela\MediaWikiWrapper\API
     protected \aportela\MediaWikiWrapper\FileInformation $original;
     protected \aportela\MediaWikiWrapper\FileInformation $thumbnail;
 
-    public function setTitle(string $title)
+    public function setTitle(string $title): void
     {
         $this->title = $title;
     }
@@ -63,13 +63,10 @@ class File extends \aportela\MediaWikiWrapper\API
                     }
                     return (true);
                 } else {
-                    switch ($json->httpCode) {
-                        case 404:
-                            throw new \aportela\MediaWikiWrapper\Exception\NotFoundException($this->title);
-                            break;
-                        default:
-                            throw new \aportela\MediaWikiWrapper\Exception\HTTPException($this->title, $json->httpCode);
-                            break;
+                    if ($json->httpCode == 404) {
+                        throw new \aportela\MediaWikiWrapper\Exception\NotFoundException($this->title);
+                    } else {
+                        throw new \aportela\MediaWikiWrapper\Exception\HTTPException($this->title, $json->httpCode);
                     }
                 }
             }
@@ -80,28 +77,24 @@ class File extends \aportela\MediaWikiWrapper\API
 
     public function getURL(\aportela\MediaWikiWrapper\FileInformationType $informationType = \aportela\MediaWikiWrapper\FileInformationType::ORIGINAL): ?string
     {
+        $url = null;
         switch ($informationType) {
             case \aportela\MediaWikiWrapper\FileInformationType::PREFERRED:
                 if ($this->prefered != null) {
-                    return ($this->prefered->url);
-                } else {
-                    return (null);
+                    $url = $this->prefered->url;
                 }
                 break;
             case \aportela\MediaWikiWrapper\FileInformationType::ORIGINAL:
                 if ($this->original != null) {
-                    return ($this->original->url);
-                } else {
-                    return (null);
+                    $url = $this->original->url;
                 }
                 break;
             case \aportela\MediaWikiWrapper\FileInformationType::THUMBNAIL:
                 if ($this->thumbnail != null) {
-                    return ($this->thumbnail->url);
-                } else {
-                    return (null);
+                    $url = $this->thumbnail->url;
                 }
                 break;
         }
+        return ($url);
     }
 }

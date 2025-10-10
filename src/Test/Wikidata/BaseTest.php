@@ -6,14 +6,14 @@ require_once dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . "vendor"
 
 class BaseTest extends \PHPUnit\Framework\TestCase
 {
-    protected static $logger;
+    protected static \Psr\Log\NullLogger $logger;
 
     /**
      * Called once just like normal constructor
      */
     public static function setUpBeforeClass(): void
     {
-        self::$logger = new \Psr\Log\NullLogger("");
+        self::$logger = new \Psr\Log\NullLogger();
     }
 
     /**

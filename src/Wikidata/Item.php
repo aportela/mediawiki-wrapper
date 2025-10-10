@@ -8,12 +8,12 @@ class Item extends \aportela\MediaWikiWrapper\API
 
     protected ?string $item;
 
-    public function setItem(string $item)
+    public function setItem(string $item): void
     {
         $this->item = $item;
     }
 
-    public function setURL(string $url)
+    public function setURL(string $url): void
     {
         $urlFields = parse_url($url);
         if (is_array($urlFields) && $urlFields["host"] == "www.wikidata.org") {
@@ -52,13 +52,10 @@ class Item extends \aportela\MediaWikiWrapper\API
                         throw new \aportela\MediaWikiWrapper\Exception\NotFoundException($this->item);
                     }
                 } else {
-                    switch ($json->httpCode) {
-                        case 404:
-                            throw new \aportela\MediaWikiWrapper\Exception\NotFoundException($this->item);
-                            break;
-                        default:
-                            throw new \aportela\MediaWikiWrapper\Exception\HTTPException($this->item, $json->httpCode);
-                            break;
+                    if ($json->httpCode == 404) {
+                        throw new \aportela\MediaWikiWrapper\Exception\NotFoundException($this->item);
+                    } else {
+                        throw new \aportela\MediaWikiWrapper\Exception\HTTPException($this->item, $json->httpCode);
                     }
                 }
             }

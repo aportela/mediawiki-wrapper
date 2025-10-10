@@ -20,14 +20,14 @@ class ItemTest extends BaseTest
         $i->getWikipediaTitle(\aportela\MediaWikiWrapper\Language::ENGLISH);
     }
 
-    public function testGetWikipediaTitleFromURL(): void
+    public function testGetWikipediaTitleFromUrl(): void
     {
         $i = new \aportela\MediaWikiWrapper\Wikidata\Item(self::$logger, \aportela\MediaWikiWrapper\APIType::REST);
         $i->setURL("https://www.wikidata.org/wiki/Q319");
         $this->assertEquals($i->getWikipediaTitle(\aportela\MediaWikiWrapper\Language::ENGLISH), "Jupiter");
     }
 
-    public function testGetWikipediaTitleFromInvalidWikidataURL(): void
+    public function testGetWikipediaTitleFromInvalidWikidataUrl(): void
     {
         $url = "https://www.wikidata.org/wiki_NOT_FOUND/Q319";
         $this->expectException(\aportela\MediaWikiWrapper\Exception\InvalidURLException::class);
@@ -37,7 +37,7 @@ class ItemTest extends BaseTest
         $i->getWikipediaTitle(\aportela\MediaWikiWrapper\Language::ENGLISH);
     }
 
-    public function testGetWikipediaTitleFromInvalidURL(): void
+    public function testGetWikipediaTitleFromInvalidUrl(): void
     {
         $url = "https://www.google.es";
         $this->expectException(\aportela\MediaWikiWrapper\Exception\InvalidURLException::class);

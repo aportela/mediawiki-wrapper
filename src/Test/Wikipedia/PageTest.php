@@ -6,12 +6,11 @@ require_once dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . "vendor"
 
 class PageTest extends BaseTest
 {
-    public function testGetJSONFromTitle(): void
+    public function testGetJsonFromTitle(): void
     {
         $p = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\APIType::REST);
         $p->setTitle("Jupiter");
         $obj = $p->getJSON();
-        $this->assertIsObject($obj);
         $this->assertIsInt($obj->id);
         $this->assertEquals($obj->id, 38930);
         $this->assertIsString($obj->title);
@@ -20,21 +19,21 @@ class PageTest extends BaseTest
         $this->assertNotEmpty($obj->source);
     }
 
-    public function testGetJSONMissingTitle(): void
+    public function testGetJsonMissingTitle(): void
     {
         $this->expectException(\aportela\MediaWikiWrapper\Exception\InvalidTitleException::class);
         $p = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\APIType::REST);
         $p->getJSON();
     }
 
-    public function testGetJSONFromURL(): void
+    public function testGetJsonFromUrl(): void
     {
         $p = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\APIType::REST);
         $p->setURL("https://en.wikipedia.org/wiki/Jupiter");
-        $this->assertIsObject($p->getJSON());
+        $this->assertEquals($p->getJSON()->title, "Jupiter");
     }
 
-    public function testGetJSONFromWikipediaInvalidURL(): void
+    public function testGetJsonFromWikipediaInvalidUrl(): void
     {
         $url = "https://en.wikipedia.org/wiki_NOT_FOUND/Jupiter";
         $this->expectException(\aportela\MediaWikiWrapper\Exception\InvalidURLException::class);
@@ -44,7 +43,7 @@ class PageTest extends BaseTest
         $p->getJSON();
     }
 
-    public function testGetJSONFromInvalidURL(): void
+    public function testGetJsonFromInvalidUrl(): void
     {
         $url = "https://www.google.es";
         $this->expectException(\aportela\MediaWikiWrapper\Exception\InvalidURLException::class);
@@ -54,7 +53,7 @@ class PageTest extends BaseTest
         $p->getJSON();
     }
 
-    public function testGetJSONFromTitleNotFound(): void
+    public function testGetJsonFromTitleNotFound(): void
     {
         $title = "Jupiter" . time() . time();
         $this->expectException(\aportela\MediaWikiWrapper\Exception\NotFoundException::class);
@@ -65,7 +64,7 @@ class PageTest extends BaseTest
         $p->getJSON();
     }
 
-    public function testGetJSONFromURLNotFound(): void
+    public function testGetJsonFromUrlNotFound(): void
     {
         $title = "Jupiter" . time() . time();
         $url = "https://en.wikipedia.org/wiki/" . $title;
@@ -76,28 +75,28 @@ class PageTest extends BaseTest
         $p->getJSON();
     }
 
-    public function testGetHTMLFromTitle(): void
+    public function testGetHtmlFromTitle(): void
     {
         $p = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\APIType::REST);
         $p->setTitle("Jupiter");
-        $this->assertIsString($p->getHTML());
+        $this->assertStringContainsString("<title>Jupiter</title>", $p->getHTML());
     }
 
-    public function testGetHTMLMissingTitle(): void
+    public function testGetHtmlMissingTitle(): void
     {
         $this->expectException(\aportela\MediaWikiWrapper\Exception\InvalidTitleException::class);
         $p = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\APIType::REST);
         $p->getHTML();
     }
 
-    public function testGetHTMLFromURL(): void
+    public function testGetHtmlFromUrl(): void
     {
         $p = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\APIType::REST);
         $p->setURL("https://en.wikipedia.org/wiki/Jupiter");
-        $this->assertIsString($p->getHTML());
+        $this->assertStringContainsString("<title>Jupiter</title>", $p->getHTML());
     }
 
-    public function testGetHTMLFromWikipediaInvalidURL(): void
+    public function testGetHtmlFromWikipediaInvalidUrl(): void
     {
         $url = "https://en.wikipedia.org/wiki_NOT_FOUND/Jupiter";
         $this->expectException(\aportela\MediaWikiWrapper\Exception\InvalidURLException::class);
@@ -107,7 +106,7 @@ class PageTest extends BaseTest
         $p->getHTML();
     }
 
-    public function testGetHTMLFromInvalidURL(): void
+    public function testGetHtmlFromInvalidUrl(): void
     {
         $url = "https://www.google.es";
         $this->expectException(\aportela\MediaWikiWrapper\Exception\InvalidURLException::class);
@@ -117,7 +116,7 @@ class PageTest extends BaseTest
         $p->getHTML();
     }
 
-    public function testGetHTMLFromTitleNotFound(): void
+    public function testGetHtmlFromTitleNotFound(): void
     {
         $title = "Jupiter" . time() . time();
         $this->expectException(\aportela\MediaWikiWrapper\Exception\NotFoundException::class);
@@ -128,7 +127,7 @@ class PageTest extends BaseTest
         $p->getHTML();
     }
 
-    public function testGetHTMLFromURLNotFound(): void
+    public function testGetHtmlFromUrlNotFound(): void
     {
         $title = "Jupiter" . time() . time();
         $url = "https://en.wikipedia.org/wiki/" . $title;
@@ -143,7 +142,7 @@ class PageTest extends BaseTest
     {
         $p = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\APIType::REST);
         $p->setTitle("Jupiter");
-        $this->assertIsString($p->getIntroPlainText());
+        $this->assertStringContainsString("Jupiter", $p->getIntroPlainText());
     }
 
     public function testGetIntroPlainTextMissingTitle(): void
@@ -153,14 +152,14 @@ class PageTest extends BaseTest
         $p->getIntroPlainText();
     }
 
-    public function testGetIntroPlainTextFromURL(): void
+    public function testGetIntroPlainTextFromUrl(): void
     {
         $p = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\APIType::REST);
         $p->setURL("https://en.wikipedia.org/wiki/Jupiter");
-        $this->assertIsString($p->getIntroPlainText());
+        $this->assertStringContainsString("Jupiter", $p->getIntroPlainText());
     }
 
-    public function testGetIntroPlainTextFromWikipediaInvalidURL(): void
+    public function testGetIntroPlainTextFromWikipediaInvalidUrl(): void
     {
         $url = "https://en.wikipedia.org/wiki_NOT_FOUND/Jupiter";
         $this->expectException(\aportela\MediaWikiWrapper\Exception\InvalidURLException::class);
@@ -170,7 +169,7 @@ class PageTest extends BaseTest
         $p->getIntroPlainText();
     }
 
-    public function testGetIntroPlainTextFromInvalidURL(): void
+    public function testGetIntroPlainTextFromInvalidUrl(): void
     {
         $url = "https://www.google.es";
         $this->expectException(\aportela\MediaWikiWrapper\Exception\InvalidURLException::class);
@@ -191,7 +190,7 @@ class PageTest extends BaseTest
         $p->getIntroPlainText();
     }
 
-    public function testGetIntroPlainTextFromURLNotFound(): void
+    public function testGetIntroPlainTextFromUrlNotFound(): void
     {
         $title = "Jupiter" . time() . time();
         $url = "https://en.wikipedia.org/wiki/" . $title;

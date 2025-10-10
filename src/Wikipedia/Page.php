@@ -14,12 +14,12 @@ class Page extends \aportela\MediaWikiWrapper\API
 
     protected ?string $title;
 
-    public function setTitle(string $title)
+    public function setTitle(string $title): void
     {
         $this->title = rawurlencode($title);
     }
 
-    public function setURL(string $url)
+    public function setURL(string $url): void
     {
         $urlFields = parse_url($url);
         if (is_array($urlFields) &&  str_ends_with($urlFields["host"], "wikipedia.org")) {
@@ -53,13 +53,10 @@ class Page extends \aportela\MediaWikiWrapper\API
                 if (json_last_error() != JSON_ERROR_NONE) {
                     throw new \aportela\MediaWikiWrapper\Exception\InvalidAPIFormatException(json_last_error_msg());
                 }
-                switch ($json->httpCode) {
-                    case 404:
-                        throw new \aportela\MediaWikiWrapper\Exception\NotFoundException($this->title);
-                        break;
-                    default:
-                        throw new \aportela\MediaWikiWrapper\Exception\HTTPException($this->title, $json->httpCode);
-                        break;
+                if ($json->httpCode == 404) {
+                    throw new \aportela\MediaWikiWrapper\Exception\NotFoundException($this->title);
+                } else {
+                    throw new \aportela\MediaWikiWrapper\Exception\HTTPException($this->title, $json->httpCode);
                 }
             }
         } else {
@@ -80,13 +77,10 @@ class Page extends \aportela\MediaWikiWrapper\API
                 if (json_last_error() != JSON_ERROR_NONE) {
                     throw new \aportela\MediaWikiWrapper\Exception\InvalidAPIFormatException(json_last_error_msg());
                 }
-                switch ($json->httpCode) {
-                    case 404:
-                        throw new \aportela\MediaWikiWrapper\Exception\NotFoundException($this->title);
-                        break;
-                    default:
-                        throw new \aportela\MediaWikiWrapper\Exception\HTTPException($this->title, $json->httpCode);
-                        break;
+                if ($json->httpCode == 404) {
+                    throw new \aportela\MediaWikiWrapper\Exception\NotFoundException($this->title);
+                } else {
+                    throw new \aportela\MediaWikiWrapper\Exception\HTTPException($this->title, $json->httpCode);
                 }
             }
         } else {
@@ -104,7 +98,7 @@ class Page extends \aportela\MediaWikiWrapper\API
                 $json = json_decode($response->body);
                 $pages = get_object_vars($json->query->pages);
                 $page = array_keys($pages)[0];
-                if ($page !== -1) {
+                if ($page != -1) {
                     return ($json->query->pages->{$page}->extract);
                 } else {
                     throw new \aportela\MediaWikiWrapper\Exception\NotFoundException($this->title);
@@ -114,13 +108,10 @@ class Page extends \aportela\MediaWikiWrapper\API
                 if (json_last_error() != JSON_ERROR_NONE) {
                     throw new \aportela\MediaWikiWrapper\Exception\InvalidAPIFormatException(json_last_error_msg());
                 }
-                switch ($json->httpCode) {
-                    case 404:
-                        throw new \aportela\MediaWikiWrapper\Exception\NotFoundException($this->title);
-                        break;
-                    default:
-                        throw new \aportela\MediaWikiWrapper\Exception\HTTPException($this->title, $json->httpCode);
-                        break;
+                if ($json->httpCode == 404) {
+                    throw new \aportela\MediaWikiWrapper\Exception\NotFoundException($this->title);
+                } else {
+                    throw new \aportela\MediaWikiWrapper\Exception\HTTPException($this->title, $json->httpCode);
                 }
             }
         } else {

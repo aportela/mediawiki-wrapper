@@ -17,7 +17,7 @@ class FileTest extends BaseTest
     {
         $this->expectException(\aportela\MediaWikiWrapper\Exception\InvalidTitleException::class);
         $f = new \aportela\MediaWikiWrapper\Wikipedia\File(self::$logger, \aportela\MediaWikiWrapper\APIType::REST);
-        $this->assertIsString($f->get());
+        $this->assertFalse($f->get());
     }
 
     public function testGetNotFound(): void
@@ -30,7 +30,7 @@ class FileTest extends BaseTest
         $f->get();
     }
 
-    public function testGETURLPreferred(): void
+    public function testGetUrlPreferred(): void
     {
         $f = new \aportela\MediaWikiWrapper\Wikipedia\File(self::$logger, \aportela\MediaWikiWrapper\APIType::REST);
         $f->setTitle("Commons-logo.svg");
@@ -40,7 +40,7 @@ class FileTest extends BaseTest
         $this->assertTrue(filter_var($url, FILTER_VALIDATE_URL) !== false);
     }
 
-    public function testGETURLOriginal(): void
+    public function testGetUrlOriginal(): void
     {
         $f = new \aportela\MediaWikiWrapper\Wikipedia\File(self::$logger, \aportela\MediaWikiWrapper\APIType::REST);
         $f->setTitle("Commons-logo.svg");
@@ -50,7 +50,7 @@ class FileTest extends BaseTest
         $this->assertTrue(filter_var($url, FILTER_VALIDATE_URL) !== false);
     }
 
-    public function testGETURLThumbnail(): void
+    public function testGetUrlThumbnail(): void
     {
         $f = new \aportela\MediaWikiWrapper\Wikipedia\File(self::$logger, \aportela\MediaWikiWrapper\APIType::REST);
         $f->setTitle("Commons-logo.svg");
