@@ -10,14 +10,17 @@ class FileTest extends BaseTest
     {
         $f = new \aportela\MediaWikiWrapper\Wikipedia\File(self::$logger, \aportela\MediaWikiWrapper\APIType::REST, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
         $f->setTitle("Commons-logo.svg");
-        $this->assertTrue($f->get());
+        $f->get();
+        $this->assertNotEmpty($f->getURL(\aportela\MediaWikiWrapper\FileInformationType::PREFERRED));
+        $this->assertNotEmpty($f->getURL(\aportela\MediaWikiWrapper\FileInformationType::ORIGINAL));
+        $this->assertNotEmpty($f->getURL(\aportela\MediaWikiWrapper\FileInformationType::THUMBNAIL));
     }
 
     public function testGetMissingTitle(): void
     {
         $this->expectException(\aportela\MediaWikiWrapper\Exception\InvalidTitleException::class);
         $f = new \aportela\MediaWikiWrapper\Wikipedia\File(self::$logger, \aportela\MediaWikiWrapper\APIType::REST, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
-        $this->assertFalse($f->get());
+        $f->get();
     }
 
     public function testGetNotFound(): void
@@ -34,7 +37,7 @@ class FileTest extends BaseTest
     {
         $f = new \aportela\MediaWikiWrapper\Wikipedia\File(self::$logger, \aportela\MediaWikiWrapper\APIType::REST, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
         $f->setTitle("Commons-logo.svg");
-        $this->assertTrue($f->get());
+        $f->get();
         $url = $f->getURL(\aportela\MediaWikiWrapper\FileInformationType::PREFERRED);
         $this->assertNotEmpty($url);
         $this->assertTrue(filter_var($url, FILTER_VALIDATE_URL) !== false);
@@ -44,7 +47,7 @@ class FileTest extends BaseTest
     {
         $f = new \aportela\MediaWikiWrapper\Wikipedia\File(self::$logger, \aportela\MediaWikiWrapper\APIType::REST, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
         $f->setTitle("Commons-logo.svg");
-        $this->assertTrue($f->get());
+        $f->get();
         $url = $f->getURL(\aportela\MediaWikiWrapper\FileInformationType::ORIGINAL);
         $this->assertNotEmpty($url);
         $this->assertTrue(filter_var($url, FILTER_VALIDATE_URL) !== false);
@@ -54,7 +57,7 @@ class FileTest extends BaseTest
     {
         $f = new \aportela\MediaWikiWrapper\Wikipedia\File(self::$logger, \aportela\MediaWikiWrapper\APIType::REST, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
         $f->setTitle("Commons-logo.svg");
-        $this->assertTrue($f->get());
+        $f->get();
         $url = $f->getURL(\aportela\MediaWikiWrapper\FileInformationType::THUMBNAIL);
         $this->assertNotEmpty($url);
         $this->assertTrue(filter_var($url, FILTER_VALIDATE_URL) !== false);
