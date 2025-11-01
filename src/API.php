@@ -82,7 +82,14 @@ abstract class API
         }
     }
 
-    private function saveCache(string $mbId, string $raw): bool
+    protected function setCacheFormat(\aportela\SimpleFSCache\CacheFormat $format): void
+    {
+        if ($this->cache !== null) {
+            $this->cache->setFormat($format);
+        }
+    }
+
+    protected function saveCache(string $mbId, string $raw): bool
     {
         if ($this->cache !== null) {
             return ($this->cache->save($mbId, $raw));
@@ -91,7 +98,7 @@ abstract class API
         }
     }
 
-    private function getCache(string $hash): bool
+    protected function getCache(string $hash): bool
     {
         if ($this->cache !== null) {
             if ($cache = $this->cache->get($hash)) {
@@ -104,7 +111,6 @@ abstract class API
             return (false);
         }
     }
-
 
     /**
      * http handler GET method wrapper for catching CurlExecException (connection errors / server busy ?)
