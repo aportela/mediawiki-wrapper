@@ -8,7 +8,7 @@ class FileTest extends BaseTest
 {
     public function testGet(): void
     {
-        $f = new \aportela\MediaWikiWrapper\Wikipedia\File(self::$logger, \aportela\MediaWikiWrapper\APIType::REST, self::$cache);
+        $f = new \aportela\MediaWikiWrapper\Wikipedia\File(self::$logger, \aportela\MediaWikiWrapper\APIType::REST, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
         $f->setTitle("Commons-logo.svg");
         $this->assertTrue($f->get());
     }
@@ -16,7 +16,7 @@ class FileTest extends BaseTest
     public function testGetMissingTitle(): void
     {
         $this->expectException(\aportela\MediaWikiWrapper\Exception\InvalidTitleException::class);
-        $f = new \aportela\MediaWikiWrapper\Wikipedia\File(self::$logger, \aportela\MediaWikiWrapper\APIType::REST, self::$cache);
+        $f = new \aportela\MediaWikiWrapper\Wikipedia\File(self::$logger, \aportela\MediaWikiWrapper\APIType::REST, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
         $this->assertFalse($f->get());
     }
 
@@ -25,14 +25,14 @@ class FileTest extends BaseTest
         $this->expectException(\aportela\MediaWikiWrapper\Exception\NotFoundException::class);
         $page = "Commons-logo.svg" . time() . time();
         $this->expectExceptionMessage(rawurlencode($page));
-        $f = new \aportela\MediaWikiWrapper\Wikipedia\File(self::$logger, \aportela\MediaWikiWrapper\APIType::REST, self::$cache);
+        $f = new \aportela\MediaWikiWrapper\Wikipedia\File(self::$logger, \aportela\MediaWikiWrapper\APIType::REST, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
         $f->setTitle($page);
         $f->get();
     }
 
     public function testGetUrlPreferred(): void
     {
-        $f = new \aportela\MediaWikiWrapper\Wikipedia\File(self::$logger, \aportela\MediaWikiWrapper\APIType::REST, self::$cache);
+        $f = new \aportela\MediaWikiWrapper\Wikipedia\File(self::$logger, \aportela\MediaWikiWrapper\APIType::REST, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
         $f->setTitle("Commons-logo.svg");
         $this->assertTrue($f->get());
         $url = $f->getURL(\aportela\MediaWikiWrapper\FileInformationType::PREFERRED);
@@ -42,7 +42,7 @@ class FileTest extends BaseTest
 
     public function testGetUrlOriginal(): void
     {
-        $f = new \aportela\MediaWikiWrapper\Wikipedia\File(self::$logger, \aportela\MediaWikiWrapper\APIType::REST, self::$cache);
+        $f = new \aportela\MediaWikiWrapper\Wikipedia\File(self::$logger, \aportela\MediaWikiWrapper\APIType::REST, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
         $f->setTitle("Commons-logo.svg");
         $this->assertTrue($f->get());
         $url = $f->getURL(\aportela\MediaWikiWrapper\FileInformationType::ORIGINAL);
@@ -52,7 +52,7 @@ class FileTest extends BaseTest
 
     public function testGetUrlThumbnail(): void
     {
-        $f = new \aportela\MediaWikiWrapper\Wikipedia\File(self::$logger, \aportela\MediaWikiWrapper\APIType::REST, self::$cache);
+        $f = new \aportela\MediaWikiWrapper\Wikipedia\File(self::$logger, \aportela\MediaWikiWrapper\APIType::REST, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
         $f->setTitle("Commons-logo.svg");
         $this->assertTrue($f->get());
         $url = $f->getURL(\aportela\MediaWikiWrapper\FileInformationType::THUMBNAIL);

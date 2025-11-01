@@ -9,6 +9,7 @@ abstract class API
     protected \aportela\MediaWikiWrapper\APIType $apiType;
 
     private ?\aportela\SimpleFSCache\Cache $cache = null;
+    private \aportela\SimpleThrottle\Throttle $throttle;
 
     // TODO: API TOKENS (more api requests allowed) https://api.wikimedia.org/wiki/Authentication#Personal_API_tokens
 
@@ -20,12 +21,8 @@ abstract class API
     private const MIN_THROTTLE_DELAY_MS = 20; // min allowed: 50 requests per second
     public const DEFAULT_THROTTLE_DELAY_MS = 1000; // default: 1 request per second
 
-    private int $originalThrottleDelayMS = 0;
-    private int $currentThrottleDelayMS = 0;
-    private int $lastThrottleTimestamp = 0;
 
-
-    public function __construct(\Psr\Log\LoggerInterface $logger, \aportela\MediaWikiWrapper\APIType $apiType = \aportela\MediaWikiWrapper\APIType::REST, ?\aportela\SimpleFSCache\Cache $cache = null, int $throttleDelayMS = self::DEFAULT_THROTTLE_DELAY_MS)
+    public function __construct(\Psr\Log\LoggerInterface $logger, \aportela\MediaWikiWrapper\APIType $apiType = \aportela\MediaWikiWrapper\APIType::REST, int $throttleDelayMS = self::DEFAULT_THROTTLE_DELAY_MS, ?\aportela\SimpleFSCache\Cache $cache = null)
     {
         $this->logger = $logger;
         $this->logger->debug("MediaWikiWrapper\\API::__construct");
@@ -34,9 +31,7 @@ abstract class API
         if ($throttleDelayMS < self::MIN_THROTTLE_DELAY_MS) {
             throw new \aportela\MediaWikiWrapper\Exception\InvalidThrottleMsDelayException("min throttle delay ms required: " . self::MIN_THROTTLE_DELAY_MS);
         }
-        $this->originalThrottleDelayMS = $throttleDelayMS;
-        $this->currentThrottleDelayMS = $throttleDelayMS;
-        $this->lastThrottleTimestamp = intval(microtime(true) * 1000);
+        $this->throttle = new \aportela\SimpleThrottle\Throttle($this->logger, $throttleDelayMS, 5000, 10);
         $this->cache = $cache;
     }
 
@@ -52,11 +47,7 @@ abstract class API
      */
     protected function incrementThrottle(): void
     {
-        // allow incrementing current throttle delay to a max of 5 seconds
-        if ($this->currentThrottleDelayMS < 5000) {
-            // set next throttle delay with current value * 2 (wait more time on next api calls)
-            $this->currentThrottleDelayMS *= 2;
-        }
+        $this->throttle->increment(\aportela\SimpleThrottle\ThrottleDelayIncrementType::MULTIPLY_BY_2);
     }
 
     /**
@@ -64,7 +55,7 @@ abstract class API
      */
     protected function resetThrottle(): void
     {
-        $this->currentThrottleDelayMS = $this->originalThrottleDelayMS;
+        $this->throttle->reset();
     }
 
     /**
@@ -72,14 +63,7 @@ abstract class API
      */
     protected function checkThrottle(): void
     {
-        if ($this->currentThrottleDelayMS > 0) {
-            $currentTimestamp = intval(microtime(true) * 1000);
-            while (($currentTimestamp - $this->lastThrottleTimestamp) < $this->currentThrottleDelayMS) {
-                usleep(10);
-                $currentTimestamp = intval(microtime(true) * 1000);
-            }
-            $this->lastThrottleTimestamp = $currentTimestamp;
-        }
+        $this->throttle->throttle();
     }
 
     protected function setCacheFormat(\aportela\SimpleFSCache\CacheFormat $format): void
