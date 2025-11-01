@@ -28,6 +28,7 @@ class File extends \aportela\MediaWikiWrapper\API
                 throw new \aportela\MediaWikiWrapper\Exception\InvalidAPIFormatException(json_last_error_msg());
             } else {
                 if ($response->code == 200) {
+                    $this->resetThrottle();
                     if (isset($json->preferred)) {
                         $this->prefered = new \aportela\MediaWikiWrapper\FileInformation(
                             \aportela\MediaWikiWrapper\FileInformationType::PREFERRED,

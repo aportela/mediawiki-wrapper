@@ -42,6 +42,7 @@ class Page extends \aportela\MediaWikiWrapper\API
             $this->logger->debug("MediaWikiWrapper\Wikipedia\Page::getJSON", array("title" => $this->title));
             $response = $this->httpGET($url);
             if ($response->code == 200) {
+                $this->resetThrottle();
                 $json = json_decode($response->body);
                 if (json_last_error() != JSON_ERROR_NONE) {
                     throw new \aportela\MediaWikiWrapper\Exception\InvalidAPIFormatException(json_last_error_msg());
@@ -74,6 +75,7 @@ class Page extends \aportela\MediaWikiWrapper\API
             $this->logger->debug("MediaWikiWrapper\Wikipedia\Page::getHTML", array("title" => $this->title));
             $response = $this->httpGET($url);
             if ($response->code == 200) {
+                $this->resetThrottle();
                 return ($response->body);
             } elseif ($response->code == 503) {
                 $this->incrementThrottle();
@@ -101,6 +103,7 @@ class Page extends \aportela\MediaWikiWrapper\API
             $this->logger->debug("MediaWikiWrapper\Wikipedia\Page::getIntoExtract", array("title" => $this->title));
             $response = $this->httpGET($url);
             if ($response->code == 200) {
+                $this->resetThrottle();
                 $json = json_decode($response->body);
                 $pages = get_object_vars($json->query->pages);
                 $page = array_keys($pages)[0];

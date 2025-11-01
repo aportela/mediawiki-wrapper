@@ -40,6 +40,7 @@ class Item extends \aportela\MediaWikiWrapper\API
                 throw new \aportela\MediaWikiWrapper\Exception\InvalidAPIFormatException(json_last_error_msg());
             } else {
                 if ($response->code == 200) {
+                    $this->resetThrottle();
                     if (
                         isset($json->entities) &&
                         isset($json->entities->{$this->item}) &&
