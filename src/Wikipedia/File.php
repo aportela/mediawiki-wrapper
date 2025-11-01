@@ -22,7 +22,7 @@ class File extends \aportela\MediaWikiWrapper\API
         if (!empty($this->title)) {
             $url = sprintf(self::REST_API_FILE_GET, $this->title);
             $this->logger->debug("MediaWikiWrapper\Wikipedia\Page::get", array("title" => $this->title));
-            $response = $this->http->GET($url);
+            $response = $this->httpGET($url);
             $json = json_decode($response->body);
             if (json_last_error() != JSON_ERROR_NONE) {
                 throw new \aportela\MediaWikiWrapper\Exception\InvalidAPIFormatException(json_last_error_msg());
@@ -62,12 +62,13 @@ class File extends \aportela\MediaWikiWrapper\API
                         );
                     }
                     return (true);
+                } elseif ($response->code == 503) {
+                    $this->incrementThrottle();
+                    throw new \aportela\MediaWikiWrapper\Exception\RateLimitExceedException("title: {$this->title}", $response->code);
+                } elseif ($json->httpCode == 404) {
+                    throw new \aportela\MediaWikiWrapper\Exception\NotFoundException($this->title);
                 } else {
-                    if ($json->httpCode == 404) {
-                        throw new \aportela\MediaWikiWrapper\Exception\NotFoundException($this->title);
-                    } else {
-                        throw new \aportela\MediaWikiWrapper\Exception\HTTPException($this->title, $json->httpCode);
-                    }
+                    throw new \aportela\MediaWikiWrapper\Exception\HTTPException($this->title, $json->httpCode);
                 }
             }
         } else {

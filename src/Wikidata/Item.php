@@ -34,7 +34,7 @@ class Item extends \aportela\MediaWikiWrapper\API
         if (!empty($this->item)) {
             $url = sprintf(self::REST_API_GET_WIKIPEDIA_TITLE, $this->item, $language->value);
             $this->logger->debug("MediaWikiWrapper\Wikidata\Item::getWikipediaTitle", array("item" => $this->item, "language" => $language->value));
-            $response = $this->http->GET($url);
+            $response = $this->httpGET($url);
             $json = json_decode($response->body);
             if (json_last_error() != JSON_ERROR_NONE) {
                 throw new \aportela\MediaWikiWrapper\Exception\InvalidAPIFormatException(json_last_error_msg());
@@ -51,12 +51,13 @@ class Item extends \aportela\MediaWikiWrapper\API
                     } else {
                         throw new \aportela\MediaWikiWrapper\Exception\NotFoundException($this->item);
                     }
+                } elseif ($response->code == 503) {
+                    $this->incrementThrottle();
+                    throw new \aportela\MediaWikiWrapper\Exception\RateLimitExceedException("item: {$this->item} - Language: {$language->value}", $response->code);
+                } elseif ($json->httpCode == 404) {
+                    throw new \aportela\MediaWikiWrapper\Exception\NotFoundException($this->item);
                 } else {
-                    if ($json->httpCode == 404) {
-                        throw new \aportela\MediaWikiWrapper\Exception\NotFoundException($this->item);
-                    } else {
-                        throw new \aportela\MediaWikiWrapper\Exception\HTTPException($this->item, $json->httpCode);
-                    }
+                    throw new \aportela\MediaWikiWrapper\Exception\HTTPException($this->item, $json->httpCode);
                 }
             }
         } else {

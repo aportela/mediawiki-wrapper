@@ -40,7 +40,7 @@ class Page extends \aportela\MediaWikiWrapper\API
         if (!empty($this->title)) {
             $url = sprintf(self::REST_API_PAGE_JSON, $this->title);
             $this->logger->debug("MediaWikiWrapper\Wikipedia\Page::getJSON", array("title" => $this->title));
-            $response = $this->http->GET($url);
+            $response = $this->httpGET($url);
             if ($response->code == 200) {
                 $json = json_decode($response->body);
                 if (json_last_error() != JSON_ERROR_NONE) {
@@ -48,6 +48,9 @@ class Page extends \aportela\MediaWikiWrapper\API
                 } else {
                     return ($json);
                 }
+            } elseif ($response->code == 503) {
+                $this->incrementThrottle();
+                throw new \aportela\MediaWikiWrapper\Exception\RateLimitExceedException("title: {$this->title}", $response->code);
             } else {
                 $json = json_decode($response->body);
                 if (json_last_error() != JSON_ERROR_NONE) {
@@ -69,9 +72,12 @@ class Page extends \aportela\MediaWikiWrapper\API
         if (!empty($this->title)) {
             $url = sprintf(self::REST_API_PAGE_HTML, $this->title);
             $this->logger->debug("MediaWikiWrapper\Wikipedia\Page::getHTML", array("title" => $this->title));
-            $response = $this->http->GET($url);
+            $response = $this->httpGET($url);
             if ($response->code == 200) {
                 return ($response->body);
+            } elseif ($response->code == 503) {
+                $this->incrementThrottle();
+                throw new \aportela\MediaWikiWrapper\Exception\RateLimitExceedException("title: {$this->title}", $response->code);
             } else {
                 $json = json_decode($response->body);
                 if (json_last_error() != JSON_ERROR_NONE) {
@@ -93,7 +99,7 @@ class Page extends \aportela\MediaWikiWrapper\API
         if (!empty($this->title)) {
             $url = sprintf(self::API_TEXTEXTRACTS_EXTENSION_PAGE_INTRO, \aportela\MediaWikiWrapper\APIFormat::JSON->value, $this->title);
             $this->logger->debug("MediaWikiWrapper\Wikipedia\Page::getIntoExtract", array("title" => $this->title));
-            $response = $this->http->GET($url);
+            $response = $this->httpGET($url);
             if ($response->code == 200) {
                 $json = json_decode($response->body);
                 $pages = get_object_vars($json->query->pages);

@@ -8,7 +8,7 @@ class ItemTest extends BaseTest
 {
     public function testGetWikipediaTitleFromItem(): void
     {
-        $i = new \aportela\MediaWikiWrapper\Wikidata\Item(self::$logger, \aportela\MediaWikiWrapper\APIType::REST);
+        $i = new \aportela\MediaWikiWrapper\Wikidata\Item(self::$logger, \aportela\MediaWikiWrapper\APIType::REST, self::$cache);
         $i->setItem("Q319");
         $this->assertEquals($i->getWikipediaTitle(\aportela\MediaWikiWrapper\Language::ENGLISH), "Jupiter");
     }
@@ -16,13 +16,13 @@ class ItemTest extends BaseTest
     public function testGetWikipediaTitleFromItemMissingItem(): void
     {
         $this->expectException(\aportela\MediaWikiWrapper\Exception\InvalidItemException::class);
-        $i = new \aportela\MediaWikiWrapper\Wikidata\Item(self::$logger, \aportela\MediaWikiWrapper\APIType::REST);
+        $i = new \aportela\MediaWikiWrapper\Wikidata\Item(self::$logger, \aportela\MediaWikiWrapper\APIType::REST, self::$cache);
         $i->getWikipediaTitle(\aportela\MediaWikiWrapper\Language::ENGLISH);
     }
 
     public function testGetWikipediaTitleFromUrl(): void
     {
-        $i = new \aportela\MediaWikiWrapper\Wikidata\Item(self::$logger, \aportela\MediaWikiWrapper\APIType::REST);
+        $i = new \aportela\MediaWikiWrapper\Wikidata\Item(self::$logger, \aportela\MediaWikiWrapper\APIType::REST, self::$cache);
         $i->setURL("https://www.wikidata.org/wiki/Q319");
         $this->assertEquals($i->getWikipediaTitle(\aportela\MediaWikiWrapper\Language::ENGLISH), "Jupiter");
     }
@@ -32,7 +32,7 @@ class ItemTest extends BaseTest
         $url = "https://www.wikidata.org/wiki_NOT_FOUND/Q319";
         $this->expectException(\aportela\MediaWikiWrapper\Exception\InvalidURLException::class);
         $this->expectExceptionMessage($url);
-        $i = new \aportela\MediaWikiWrapper\Wikidata\Item(self::$logger, \aportela\MediaWikiWrapper\APIType::REST);
+        $i = new \aportela\MediaWikiWrapper\Wikidata\Item(self::$logger, \aportela\MediaWikiWrapper\APIType::REST, self::$cache);
         $i->setURL($url);
         $i->getWikipediaTitle(\aportela\MediaWikiWrapper\Language::ENGLISH);
     }
@@ -42,7 +42,7 @@ class ItemTest extends BaseTest
         $url = "https://www.google.es";
         $this->expectException(\aportela\MediaWikiWrapper\Exception\InvalidURLException::class);
         $this->expectExceptionMessage($url);
-        $i = new \aportela\MediaWikiWrapper\Wikidata\Item(self::$logger, \aportela\MediaWikiWrapper\APIType::REST);
+        $i = new \aportela\MediaWikiWrapper\Wikidata\Item(self::$logger, \aportela\MediaWikiWrapper\APIType::REST, self::$cache);
         $i->setURL($url);
         $i->getWikipediaTitle(\aportela\MediaWikiWrapper\Language::ENGLISH);
     }
@@ -52,7 +52,7 @@ class ItemTest extends BaseTest
         $this->expectException(\aportela\MediaWikiWrapper\Exception\NotFoundException::class);
         $item = "Q_000" . time();
         $this->expectExceptionMessage(rawurlencode($item));
-        $i = new \aportela\MediaWikiWrapper\Wikidata\Item(self::$logger, \aportela\MediaWikiWrapper\APIType::REST);
+        $i = new \aportela\MediaWikiWrapper\Wikidata\Item(self::$logger, \aportela\MediaWikiWrapper\APIType::REST, self::$cache);
         $i->setItem($item);
         $i->getWikipediaTitle(\aportela\MediaWikiWrapper\Language::ENGLISH);
     }
