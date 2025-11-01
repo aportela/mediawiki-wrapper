@@ -39,28 +39,41 @@ class Page extends \aportela\MediaWikiWrapper\API
     {
         if (!empty($this->title)) {
             $url = sprintf(self::REST_API_PAGE_JSON, $this->title);
-            $this->logger->debug("MediaWikiWrapper\Wikipedia\Page::getJSON", array("title" => $this->title));
-            $response = $this->httpGET($url);
-            if ($response->code == 200) {
-                $this->resetThrottle();
-                $json = json_decode($response->body);
+            $this->setCacheFormat(\aportela\SimpleFSCache\CacheFormat::JSON);
+            $cacheHash = md5($url);
+            $cacheData = $this->getCache($cacheHash);
+            if ($cacheData === false) {
+                $this->logger->debug("MediaWikiWrapper\Wikipedia\Page::getJSON", array("title" => $this->title));
+                $response = $this->httpGET($url);
+                if ($response->code == 200) {
+                    $this->resetThrottle();
+                    $json = json_decode($response->body);
+                    if (json_last_error() != JSON_ERROR_NONE) {
+                        throw new \aportela\MediaWikiWrapper\Exception\InvalidAPIFormatException(json_last_error_msg());
+                    } else {
+                        $this->saveCache($cacheHash, $response->body);
+                        return ($json);
+                    }
+                } elseif ($response->code == 503) {
+                    $this->incrementThrottle();
+                    throw new \aportela\MediaWikiWrapper\Exception\RateLimitExceedException("title: {$this->title}", $response->code);
+                } else {
+                    $json = json_decode($response->body);
+                    if (json_last_error() != JSON_ERROR_NONE) {
+                        throw new \aportela\MediaWikiWrapper\Exception\InvalidAPIFormatException(json_last_error_msg());
+                    }
+                    if ($json->httpCode == 404) {
+                        throw new \aportela\MediaWikiWrapper\Exception\NotFoundException($this->title);
+                    } else {
+                        throw new \aportela\MediaWikiWrapper\Exception\HTTPException($this->title, $json->httpCode);
+                    }
+                }
+            } else {
+                $json = json_decode($cacheData);
                 if (json_last_error() != JSON_ERROR_NONE) {
                     throw new \aportela\MediaWikiWrapper\Exception\InvalidAPIFormatException(json_last_error_msg());
                 } else {
                     return ($json);
-                }
-            } elseif ($response->code == 503) {
-                $this->incrementThrottle();
-                throw new \aportela\MediaWikiWrapper\Exception\RateLimitExceedException("title: {$this->title}", $response->code);
-            } else {
-                $json = json_decode($response->body);
-                if (json_last_error() != JSON_ERROR_NONE) {
-                    throw new \aportela\MediaWikiWrapper\Exception\InvalidAPIFormatException(json_last_error_msg());
-                }
-                if ($json->httpCode == 404) {
-                    throw new \aportela\MediaWikiWrapper\Exception\NotFoundException($this->title);
-                } else {
-                    throw new \aportela\MediaWikiWrapper\Exception\HTTPException($this->title, $json->httpCode);
                 }
             }
         } else {
@@ -72,24 +85,32 @@ class Page extends \aportela\MediaWikiWrapper\API
     {
         if (!empty($this->title)) {
             $url = sprintf(self::REST_API_PAGE_HTML, $this->title);
-            $this->logger->debug("MediaWikiWrapper\Wikipedia\Page::getHTML", array("title" => $this->title));
-            $response = $this->httpGET($url);
-            if ($response->code == 200) {
-                $this->resetThrottle();
-                return ($response->body);
-            } elseif ($response->code == 503) {
-                $this->incrementThrottle();
-                throw new \aportela\MediaWikiWrapper\Exception\RateLimitExceedException("title: {$this->title}", $response->code);
-            } else {
-                $json = json_decode($response->body);
-                if (json_last_error() != JSON_ERROR_NONE) {
-                    throw new \aportela\MediaWikiWrapper\Exception\InvalidAPIFormatException(json_last_error_msg());
-                }
-                if ($json->httpCode == 404) {
-                    throw new \aportela\MediaWikiWrapper\Exception\NotFoundException($this->title);
+            $this->setCacheFormat(\aportela\SimpleFSCache\CacheFormat::HTML);
+            $cacheHash = md5($url);
+            $cacheData = $this->getCache($cacheHash);
+            if ($cacheData === false) {
+                $this->logger->debug("MediaWikiWrapper\Wikipedia\Page::getHTML", array("title" => $this->title));
+                $response = $this->httpGET($url);
+                if ($response->code == 200) {
+                    $this->resetThrottle();
+                    $this->saveCache($cacheHash, $response->body);
+                    return ($response->body);
+                } elseif ($response->code == 503) {
+                    $this->incrementThrottle();
+                    throw new \aportela\MediaWikiWrapper\Exception\RateLimitExceedException("title: {$this->title}", $response->code);
                 } else {
-                    throw new \aportela\MediaWikiWrapper\Exception\HTTPException($this->title, $json->httpCode);
+                    $json = json_decode($response->body);
+                    if (json_last_error() != JSON_ERROR_NONE) {
+                        throw new \aportela\MediaWikiWrapper\Exception\InvalidAPIFormatException(json_last_error_msg());
+                    }
+                    if ($json->httpCode == 404) {
+                        throw new \aportela\MediaWikiWrapper\Exception\NotFoundException($this->title);
+                    } else {
+                        throw new \aportela\MediaWikiWrapper\Exception\HTTPException($this->title, $json->httpCode);
+                    }
                 }
+            } else {
+                return ($cacheData);
             }
         } else {
             throw new \aportela\MediaWikiWrapper\Exception\InvalidTitleException("");
@@ -100,28 +121,36 @@ class Page extends \aportela\MediaWikiWrapper\API
     {
         if (!empty($this->title)) {
             $url = sprintf(self::API_TEXTEXTRACTS_EXTENSION_PAGE_INTRO, \aportela\MediaWikiWrapper\APIFormat::JSON->value, $this->title);
-            $this->logger->debug("MediaWikiWrapper\Wikipedia\Page::getIntoExtract", array("title" => $this->title));
-            $response = $this->httpGET($url);
-            if ($response->code == 200) {
-                $this->resetThrottle();
-                $json = json_decode($response->body);
-                $pages = get_object_vars($json->query->pages);
-                $page = array_keys($pages)[0];
-                if ($page != -1) {
-                    return ($json->query->pages->{$page}->extract);
+            $this->setCacheFormat(\aportela\SimpleFSCache\CacheFormat::TXT);
+            $cacheHash = md5($url);
+            $cacheData = $this->getCache($cacheHash);
+            if ($cacheData === false) {
+                $this->logger->debug("MediaWikiWrapper\Wikipedia\Page::getIntoExtract", array("title" => $this->title));
+                $response = $this->httpGET($url);
+                if ($response->code == 200) {
+                    $this->resetThrottle();
+                    $json = json_decode($response->body);
+                    $pages = get_object_vars($json->query->pages);
+                    $page = array_keys($pages)[0];
+                    if ($page != -1) {
+                        $this->saveCache($cacheHash, $json->query->pages->{$page}->extract);
+                        return ($json->query->pages->{$page}->extract);
+                    } else {
+                        throw new \aportela\MediaWikiWrapper\Exception\NotFoundException($this->title);
+                    }
                 } else {
-                    throw new \aportela\MediaWikiWrapper\Exception\NotFoundException($this->title);
+                    $json = json_decode($response->body);
+                    if (json_last_error() != JSON_ERROR_NONE) {
+                        throw new \aportela\MediaWikiWrapper\Exception\InvalidAPIFormatException(json_last_error_msg());
+                    }
+                    if ($json->httpCode == 404) {
+                        throw new \aportela\MediaWikiWrapper\Exception\NotFoundException($this->title);
+                    } else {
+                        throw new \aportela\MediaWikiWrapper\Exception\HTTPException($this->title, $json->httpCode);
+                    }
                 }
             } else {
-                $json = json_decode($response->body);
-                if (json_last_error() != JSON_ERROR_NONE) {
-                    throw new \aportela\MediaWikiWrapper\Exception\InvalidAPIFormatException(json_last_error_msg());
-                }
-                if ($json->httpCode == 404) {
-                    throw new \aportela\MediaWikiWrapper\Exception\NotFoundException($this->title);
-                } else {
-                    throw new \aportela\MediaWikiWrapper\Exception\HTTPException($this->title, $json->httpCode);
-                }
+                return ($cacheData);
             }
         } else {
             throw new \aportela\MediaWikiWrapper\Exception\InvalidTitleException("");

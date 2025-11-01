@@ -17,59 +17,76 @@ class File extends \aportela\MediaWikiWrapper\API
         $this->title = $title;
     }
 
-    public function get(): bool
+    private function parseGetData(object $json): void
+    {
+        if (isset($json->preferred)) {
+            $this->prefered = new \aportela\MediaWikiWrapper\FileInformation(
+                \aportela\MediaWikiWrapper\FileInformationType::PREFERRED,
+                $json->preferred->mediatype,
+                $json->preferred->size,
+                $json->preferred->width,
+                $json->preferred->height,
+                $json->preferred->duration,
+                $json->preferred->url
+            );
+        }
+        if (isset($json->original)) {
+            $this->original = new \aportela\MediaWikiWrapper\FileInformation(
+                \aportela\MediaWikiWrapper\FileInformationType::ORIGINAL,
+                $json->preferred->mediatype,
+                $json->preferred->size,
+                $json->preferred->width,
+                $json->preferred->height,
+                $json->preferred->duration,
+                $json->preferred->url
+            );
+        }
+        if (isset($json->thumbnail)) {
+            $this->thumbnail = new \aportela\MediaWikiWrapper\FileInformation(
+                \aportela\MediaWikiWrapper\FileInformationType::THUMBNAIL,
+                $json->preferred->mediatype,
+                $json->preferred->size,
+                $json->preferred->width,
+                $json->preferred->height,
+                $json->preferred->duration,
+                $json->preferred->url
+            );
+        }
+    }
+
+    public function get(): void
     {
         if (!empty($this->title)) {
             $url = sprintf(self::REST_API_FILE_GET, $this->title);
             $this->logger->debug("MediaWikiWrapper\Wikipedia\Page::get", array("title" => $this->title));
-            $response = $this->httpGET($url);
-            $json = json_decode($response->body);
-            if (json_last_error() != JSON_ERROR_NONE) {
-                throw new \aportela\MediaWikiWrapper\Exception\InvalidAPIFormatException(json_last_error_msg());
-            } else {
-                if ($response->code == 200) {
-                    $this->resetThrottle();
-                    if (isset($json->preferred)) {
-                        $this->prefered = new \aportela\MediaWikiWrapper\FileInformation(
-                            \aportela\MediaWikiWrapper\FileInformationType::PREFERRED,
-                            $json->preferred->mediatype,
-                            $json->preferred->size,
-                            $json->preferred->width,
-                            $json->preferred->height,
-                            $json->preferred->duration,
-                            $json->preferred->url
-                        );
-                    }
-                    if (isset($json->original)) {
-                        $this->original = new \aportela\MediaWikiWrapper\FileInformation(
-                            \aportela\MediaWikiWrapper\FileInformationType::ORIGINAL,
-                            $json->preferred->mediatype,
-                            $json->preferred->size,
-                            $json->preferred->width,
-                            $json->preferred->height,
-                            $json->preferred->duration,
-                            $json->preferred->url
-                        );
-                    }
-                    if (isset($json->thumbnail)) {
-                        $this->thumbnail = new \aportela\MediaWikiWrapper\FileInformation(
-                            \aportela\MediaWikiWrapper\FileInformationType::THUMBNAIL,
-                            $json->preferred->mediatype,
-                            $json->preferred->size,
-                            $json->preferred->width,
-                            $json->preferred->height,
-                            $json->preferred->duration,
-                            $json->preferred->url
-                        );
-                    }
-                    return (true);
-                } elseif ($response->code == 503) {
-                    $this->incrementThrottle();
-                    throw new \aportela\MediaWikiWrapper\Exception\RateLimitExceedException("title: {$this->title}", $response->code);
-                } elseif ($json->httpCode == 404) {
-                    throw new \aportela\MediaWikiWrapper\Exception\NotFoundException($this->title);
+            $this->setCacheFormat(\aportela\SimpleFSCache\CacheFormat::JSON);
+            $cacheHash = md5($url);
+            $cacheData = $this->getCache($cacheHash);
+            if ($cacheData === false) {
+                $response = $this->httpGET($url);
+                $json = json_decode($response->body);
+                if (json_last_error() != JSON_ERROR_NONE) {
+                    throw new \aportela\MediaWikiWrapper\Exception\InvalidAPIFormatException(json_last_error_msg());
                 } else {
-                    throw new \aportela\MediaWikiWrapper\Exception\HTTPException($this->title, $json->httpCode);
+                    if ($response->code == 200) {
+                        $this->resetThrottle();
+                        $this->saveCache($cacheHash, $response->body);
+                        $this->parseGetData($json);
+                    } elseif ($response->code == 503) {
+                        $this->incrementThrottle();
+                        throw new \aportela\MediaWikiWrapper\Exception\RateLimitExceedException("title: {$this->title}", $response->code);
+                    } elseif ($json->httpCode == 404) {
+                        throw new \aportela\MediaWikiWrapper\Exception\NotFoundException($this->title);
+                    } else {
+                        throw new \aportela\MediaWikiWrapper\Exception\HTTPException($this->title, $json->httpCode);
+                    }
+                }
+            } else {
+                $json = json_decode($cacheData);
+                if (json_last_error() != JSON_ERROR_NONE) {
+                    throw new \aportela\MediaWikiWrapper\Exception\InvalidAPIFormatException(json_last_error_msg());
+                } else {
+                    $this->parseGetData($json);
                 }
             }
         } else {

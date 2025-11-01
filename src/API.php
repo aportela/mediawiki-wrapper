@@ -73,21 +73,20 @@ abstract class API
         }
     }
 
-    protected function saveCache(string $mbId, string $raw): bool
+    protected function saveCache(string $hash, string $raw): bool
     {
         if ($this->cache !== null) {
-            return ($this->cache->save($mbId, $raw));
+            return ($this->cache->save($hash, $raw));
         } else {
             return (false);
         }
     }
 
-    protected function getCache(string $hash): bool
+    protected function getCache(string $hash): bool|string
     {
         if ($this->cache !== null) {
             if ($cache = $this->cache->get($hash)) {
-                // TODO
-                return (true);
+                return ($cache);
             } else {
                 return (false);
             }
