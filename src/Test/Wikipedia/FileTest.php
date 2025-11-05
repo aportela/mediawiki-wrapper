@@ -11,8 +11,8 @@ class FileTest extends BaseTest
 
     public function testGet(): void
     {
-        $f = new \aportela\MediaWikiWrapper\Wikipedia\File(self::$logger, self::EXISTENT_FILE_TITLE, \aportela\MediaWikiWrapper\APIType::REST, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
-        $f->get();
+        $f = new \aportela\MediaWikiWrapper\Wikipedia\File(self::$logger, \aportela\MediaWikiWrapper\APIType::REST, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
+        $f->get(self::EXISTENT_FILE_TITLE);
         $this->assertNotEmpty($f->getURL(\aportela\MediaWikiWrapper\FileInformationType::PREFERRED));
         $this->assertNotEmpty($f->getURL(\aportela\MediaWikiWrapper\FileInformationType::ORIGINAL));
         $this->assertNotEmpty($f->getURL(\aportela\MediaWikiWrapper\FileInformationType::THUMBNAIL));
@@ -21,8 +21,9 @@ class FileTest extends BaseTest
     public function testGetMissingTitle(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $f = new \aportela\MediaWikiWrapper\Wikipedia\File(self::$logger, "", \aportela\MediaWikiWrapper\APIType::REST, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
-        $f->get();
+        $this->expectExceptionMessage("empty title");
+        $f = new \aportela\MediaWikiWrapper\Wikipedia\File(self::$logger, \aportela\MediaWikiWrapper\APIType::REST, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
+        $f->get("");
     }
 
     public function testGetNotFound(): void
@@ -30,14 +31,14 @@ class FileTest extends BaseTest
         $this->expectException(\aportela\MediaWikiWrapper\Exception\NotFoundException::class);
         $page = self::EXISTENT_FILE_TITLE . time() . time();
         $this->expectExceptionMessage(rawurlencode($page));
-        $f = new \aportela\MediaWikiWrapper\Wikipedia\File(self::$logger, $page, \aportela\MediaWikiWrapper\APIType::REST, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
-        $f->get();
+        $f = new \aportela\MediaWikiWrapper\Wikipedia\File(self::$logger,  \aportela\MediaWikiWrapper\APIType::REST, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
+        $f->get($page);
     }
 
     public function testGetUrlPreferred(): void
     {
-        $f = new \aportela\MediaWikiWrapper\Wikipedia\File(self::$logger, self::EXISTENT_FILE_TITLE, \aportela\MediaWikiWrapper\APIType::REST, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
-        $f->get();
+        $f = new \aportela\MediaWikiWrapper\Wikipedia\File(self::$logger, \aportela\MediaWikiWrapper\APIType::REST, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
+        $f->get(self::EXISTENT_FILE_TITLE);
         $url = $f->getURL(\aportela\MediaWikiWrapper\FileInformationType::PREFERRED);
         $this->assertNotEmpty($url);
         $this->assertTrue(filter_var($url, FILTER_VALIDATE_URL) !== false);
@@ -45,8 +46,8 @@ class FileTest extends BaseTest
 
     public function testGetUrlOriginal(): void
     {
-        $f = new \aportela\MediaWikiWrapper\Wikipedia\File(self::$logger, self::EXISTENT_FILE_TITLE, \aportela\MediaWikiWrapper\APIType::REST, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
-        $f->get();
+        $f = new \aportela\MediaWikiWrapper\Wikipedia\File(self::$logger, \aportela\MediaWikiWrapper\APIType::REST, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
+        $f->get(self::EXISTENT_FILE_TITLE);
         $url = $f->getURL(\aportela\MediaWikiWrapper\FileInformationType::ORIGINAL);
         $this->assertNotEmpty($url);
         $this->assertTrue(filter_var($url, FILTER_VALIDATE_URL) !== false);
@@ -54,8 +55,8 @@ class FileTest extends BaseTest
 
     public function testGetUrlThumbnail(): void
     {
-        $f = new \aportela\MediaWikiWrapper\Wikipedia\File(self::$logger, self::EXISTENT_FILE_TITLE, \aportela\MediaWikiWrapper\APIType::REST, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
-        $f->get();
+        $f = new \aportela\MediaWikiWrapper\Wikipedia\File(self::$logger, \aportela\MediaWikiWrapper\APIType::REST, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
+        $f->get(self::EXISTENT_FILE_TITLE);
         $url = $f->getURL(\aportela\MediaWikiWrapper\FileInformationType::THUMBNAIL);
         $this->assertNotEmpty($url);
         $this->assertTrue(filter_var($url, FILTER_VALIDATE_URL) !== false);
