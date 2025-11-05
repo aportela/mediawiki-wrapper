@@ -27,7 +27,7 @@ abstract class API
         $this->apiType = $apiType;
         $this->http = new \aportela\HTTPRequestWrapper\HTTPRequest($this->logger);
         if ($throttleDelayMS < self::MIN_THROTTLE_DELAY_MS) {
-            $this->logger->critical("\aportela\MediaWikiWrapper\Entity::__construct - ERROR: invalid throttleDelayMS", [$throttleDelayMS, self::MIN_THROTTLE_DELAY_MS]);
+            $this->logger->critical("\aportela\MediaWikiWrapper\API::__construct - ERROR: invalid throttleDelayMS", [$throttleDelayMS, self::MIN_THROTTLE_DELAY_MS]);
             throw new \aportela\MediaWikiWrapper\Exception\InvalidThrottleMsDelayException("min throttle delay ms required: " . self::MIN_THROTTLE_DELAY_MS);
         }
         $this->throttle = new \aportela\SimpleThrottle\Throttle($this->logger, $throttleDelayMS, 5000, 10);
@@ -118,6 +118,27 @@ abstract class API
             $this->logger->error("\aportela\MediaWikiWrapper\Entity::httpGET - Error opening URL", [$url, $e->getCode(), $e->getMessage()]);
             $this->incrementThrottle(); // sometimes api calls return connection error, interpret this as rate limit response
             throw new \aportela\MediaWikiWrapper\Exception\RemoteAPIServerConnectionException("Error opening URL: {$url}", 0, $e);
+        }
+    }
+
+    protected function parseJSONString(string $raw): object
+    {
+        if (! empty($raw)) {
+            $json = json_decode($raw);
+            if (json_last_error() != JSON_ERROR_NONE) {
+                $this->logger->error("\aportela\MediaWikiWrapper\API::parseJSONString - Error decoding json string", [json_last_error_msg(), json_last_error()]);
+                throw new \aportela\MediaWikiWrapper\Exception\InvalidJSONException(json_last_error_msg(), json_last_error());
+            } else {
+                if (is_object($json)) {
+                    return ($json);
+                } else {
+                    $this->logger->error("\aportela\MediaWikiWrapper\API::parseJSONString - Error decoding json string (invalid/null object)");
+                    throw new \aportela\MediaWikiWrapper\Exception\InvalidJSONException("Error decoding json string (invalid/null object)");
+                }
+            }
+        } else {
+            $this->logger->error("\aportela\MediaWikiWrapper\API::parseJSONString - Error decoding json string (empty string)");
+            throw new \aportela\MediaWikiWrapper\Exception\InvalidJSONException("Error decoding json string (empty string)");
         }
     }
 }
