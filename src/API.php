@@ -34,7 +34,9 @@ abstract class API
         $this->cache = $cache;
     }
 
-    public function __destruct() {}
+    public function __destruct()
+    {
+    }
 
     /**
      * increment throttle delay (time between api calls)

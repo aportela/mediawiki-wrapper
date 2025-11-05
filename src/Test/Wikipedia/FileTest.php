@@ -6,7 +6,6 @@ require_once dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . "vendor"
 
 class FileTest extends BaseTest
 {
-
     private const EXISTENT_FILE_TITLE = "Commons-logo.svg";
 
     public function testGet(): void
@@ -31,7 +30,7 @@ class FileTest extends BaseTest
         $this->expectException(\aportela\MediaWikiWrapper\Exception\NotFoundException::class);
         $page = self::EXISTENT_FILE_TITLE . time() . time();
         $this->expectExceptionMessage(rawurlencode($page));
-        $f = new \aportela\MediaWikiWrapper\Wikipedia\File(self::$logger,  \aportela\MediaWikiWrapper\APIType::REST, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
+        $f = new \aportela\MediaWikiWrapper\Wikipedia\File(self::$logger, \aportela\MediaWikiWrapper\APIType::REST, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
         $f->get($page);
     }
 
