@@ -21,24 +21,20 @@ abstract class API
     private const MIN_THROTTLE_DELAY_MS = 20; // min allowed: 50 requests per second
     public const DEFAULT_THROTTLE_DELAY_MS = 1000; // default: 1 request per second
 
-
     public function __construct(\Psr\Log\LoggerInterface $logger, \aportela\MediaWikiWrapper\APIType $apiType = \aportela\MediaWikiWrapper\APIType::REST, int $throttleDelayMS = self::DEFAULT_THROTTLE_DELAY_MS, ?\aportela\SimpleFSCache\Cache $cache = null)
     {
         $this->logger = $logger;
-        $this->logger->debug("MediaWikiWrapper\\API::__construct");
         $this->apiType = $apiType;
         $this->http = new \aportela\HTTPRequestWrapper\HTTPRequest($this->logger);
         if ($throttleDelayMS < self::MIN_THROTTLE_DELAY_MS) {
+            $this->logger->critical("\aportela\MediaWikiWrapper\Entity::__construct - ERROR: invalid throttleDelayMS", [$throttleDelayMS, self::MIN_THROTTLE_DELAY_MS]);
             throw new \aportela\MediaWikiWrapper\Exception\InvalidThrottleMsDelayException("min throttle delay ms required: " . self::MIN_THROTTLE_DELAY_MS);
         }
         $this->throttle = new \aportela\SimpleThrottle\Throttle($this->logger, $throttleDelayMS, 5000, 10);
         $this->cache = $cache;
     }
 
-    public function __destruct()
-    {
-        $this->logger->debug("MediaWikiWrapper\API::__destruct");
-    }
+    public function __destruct() {}
 
     /**
      * increment throttle delay (time between api calls)
@@ -100,13 +96,13 @@ abstract class API
      */
     protected function httpGET(string $url): \aportela\HTTPRequestWrapper\HTTPResponse
     {
-        $this->logger->debug("Opening url: {$url}");
+        $this->logger->debug("\aportela\MediaWikiWrapper\Entity::httpGET - Opening URL", [$url]);
         try {
             return ($this->http->GET($url));
         } catch (\aportela\HTTPRequestWrapper\Exception\CurlExecException $e) {
             $this->logger->error("Error opening URL " . $url, [$e->getCode(), $e->getMessage()]);
             $this->incrementThrottle(); // sometimes api calls return connection error, interpret this as rate limit response
-            throw new \aportela\MediaWikiWrapper\Exception\RemoteAPIServerConnectionException("Error opening URL " . $url, 0, $e);
+            throw new \aportela\MediaWikiWrapper\Exception\RemoteAPIServerConnectionException("Error opening URL: {$url}", 0, $e);
         }
     }
 }
