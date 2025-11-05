@@ -36,22 +36,17 @@ class Item extends \aportela\MediaWikiWrapper\API
             $this->logger->debug("MediaWikiWrapper\Wikidata\Item::getWikipediaTitle", array("item" => $this->item, "language" => $language->value));
             $responseBody = $this->httpGET($url);
             if (! empty($responseBody)) {
-                $json = json_decode($responseBody);
-                if (json_last_error() != JSON_ERROR_NONE) {
-                    throw new \aportela\MediaWikiWrapper\Exception\InvalidAPIFormatException(json_last_error_msg());
+                $json = $this->parseJSONString($responseBody);
+                if (
+                    isset($json->entities) &&
+                    isset($json->entities->{$this->item}) &&
+                    isset($json->entities->{$this->item}->sitelinks) &&
+                    isset($json->entities->{$this->item}->sitelinks->{$language->value . "wiki"}) &&
+                    isset($json->entities->{$this->item}->sitelinks->{$language->value . "wiki"}->title)
+                ) {
+                    return ($json->entities->{$this->item}->sitelinks->{$language->value . "wiki"}->title);
                 } else {
-                    if (
-                        is_object($json) &&
-                        isset($json->entities) &&
-                        isset($json->entities->{$this->item}) &&
-                        isset($json->entities->{$this->item}->sitelinks) &&
-                        isset($json->entities->{$this->item}->sitelinks->{$language->value . "wiki"}) &&
-                        isset($json->entities->{$this->item}->sitelinks->{$language->value . "wiki"}->title)
-                    ) {
-                        return ($json->entities->{$this->item}->sitelinks->{$language->value . "wiki"}->title);
-                    } else {
-                        throw new \aportela\MediaWikiWrapper\Exception\NotFoundException($this->item);
-                    }
+                    throw new \aportela\MediaWikiWrapper\Exception\NotFoundException($this->item);
                 }
             } else {
                 $this->logger->error("\aportela\MediaWikiWrapper\Item::getWikipediaTitle - Error: empty body on API response", [$url]);
