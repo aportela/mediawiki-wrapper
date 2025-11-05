@@ -47,8 +47,7 @@ composer require aportela/mediawiki-wrapper
     $html = $p->getHTML();
 
     // get file URL from title
-    $f = new \aportela\MediaWikiWrapper\Wikipedia\File($logger, \aportela\MediaWikiWrapper\APIType::REST);
-    $f->setTitle("Commons-logo.svg");
+    $f = new \aportela\MediaWikiWrapper\Wikipedia\File($logger, "Commons-logo.svg", \aportela\MediaWikiWrapper\APIType::REST);
     if ($f->get()) {
         $preferredURL = $f->getURL(\aportela\MediaWikiWrapper\FileInformationType::PREFERRED);
         $originalURL = $f->getURL(\aportela\MediaWikiWrapper\FileInformationType::ORIGINAL);

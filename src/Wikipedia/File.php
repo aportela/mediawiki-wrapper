@@ -6,88 +6,88 @@ class File extends \aportela\MediaWikiWrapper\API
 {
     public const REST_API_FILE_GET = "https://commons.wikimedia.org/w/rest.php/v1/file/File:%s";
 
-    protected ?string $title;
+    protected string $title;
 
     protected \aportela\MediaWikiWrapper\FileInformation $prefered;
     protected \aportela\MediaWikiWrapper\FileInformation $original;
     protected \aportela\MediaWikiWrapper\FileInformation $thumbnail;
 
+    public function __construct(\Psr\Log\LoggerInterface $logger, string $title, \aportela\MediaWikiWrapper\APIType $apiType = \aportela\MediaWikiWrapper\APIType::REST, int $throttleDelayMS = self::DEFAULT_THROTTLE_DELAY_MS, ?\aportela\SimpleFSCache\Cache $cache = null)
+    {
+        parent::__construct($logger, $apiType, $throttleDelayMS, $cache);
+        $this->setTitle($title);
+    }
+
     public function setTitle(string $title): void
     {
-        $this->title = $title;
+        if (! empty($title)) {
+            $this->title = $title;
+        } else {
+            $this->logger->error("\aportela\MediaWikiWrapper\Wikipedia\File::setTitle - Error: empty title");
+            throw new \InvalidArgumentException("empty title");
+        }
     }
 
     private function parseGetData(string $raw): void
     {
-        $json = json_decode($raw);
-        if (json_last_error() != JSON_ERROR_NONE) {
-            throw new \aportela\MediaWikiWrapper\Exception\InvalidAPIFormatException(json_last_error_msg());
-        } else {
-            if (is_object($json)) {
-                if (isset($json->preferred)) {
-                    $this->prefered = new \aportela\MediaWikiWrapper\FileInformation(
-                        \aportela\MediaWikiWrapper\FileInformationType::PREFERRED,
-                        $json->preferred->mediatype,
-                        $json->preferred->size,
-                        $json->preferred->width,
-                        $json->preferred->height,
-                        $json->preferred->duration,
-                        $json->preferred->url
-                    );
-                }
-                if (isset($json->original)) {
-                    $this->original = new \aportela\MediaWikiWrapper\FileInformation(
-                        \aportela\MediaWikiWrapper\FileInformationType::ORIGINAL,
-                        $json->original->mediatype,
-                        $json->original->size,
-                        $json->original->width,
-                        $json->original->height,
-                        $json->original->duration,
-                        $json->original->url
-                    );
-                }
-                if (isset($json->thumbnail)) {
-                    $this->thumbnail = new \aportela\MediaWikiWrapper\FileInformation(
-                        \aportela\MediaWikiWrapper\FileInformationType::THUMBNAIL,
-                        $json->thumbnail->mediatype,
-                        $json->thumbnail->size,
-                        $json->thumbnail->width,
-                        $json->thumbnail->height,
-                        $json->thumbnail->duration,
-                        $json->thumbnail->url
-                    );
-                }
-            }
+        $json = $this->parseJSONString($raw);
+        if (isset($json->preferred)) {
+            $this->prefered = new \aportela\MediaWikiWrapper\FileInformation(
+                \aportela\MediaWikiWrapper\FileInformationType::PREFERRED,
+                $json->preferred->mediatype,
+                $json->preferred->size,
+                $json->preferred->width,
+                $json->preferred->height,
+                $json->preferred->duration,
+                $json->preferred->url
+            );
+        }
+        if (isset($json->original)) {
+            $this->original = new \aportela\MediaWikiWrapper\FileInformation(
+                \aportela\MediaWikiWrapper\FileInformationType::ORIGINAL,
+                $json->original->mediatype,
+                $json->original->size,
+                $json->original->width,
+                $json->original->height,
+                $json->original->duration,
+                $json->original->url
+            );
+        }
+        if (isset($json->thumbnail)) {
+            $this->thumbnail = new \aportela\MediaWikiWrapper\FileInformation(
+                \aportela\MediaWikiWrapper\FileInformationType::THUMBNAIL,
+                $json->thumbnail->mediatype,
+                $json->thumbnail->size,
+                $json->thumbnail->width,
+                $json->thumbnail->height,
+                $json->thumbnail->duration,
+                $json->thumbnail->url
+            );
         }
     }
 
     public function get(): void
     {
-        if (!empty($this->title)) {
-            $url = sprintf(self::REST_API_FILE_GET, $this->title);
-            $this->logger->debug("MediaWikiWrapper\Wikipedia\Page::get", array("title" => $this->title));
-            $this->setCacheFormat(\aportela\SimpleFSCache\CacheFormat::JSON);
-            $cacheHash = md5($url);
-            $cacheData = $this->getCache($cacheHash);
-            if (! is_string($cacheData)) {
-                $responseBody = $this->httpGET($url);
-                if (! empty($responseBody)) {
-                    $this->saveCache($cacheHash, $responseBody);
-                    $this->parseGetData($responseBody);
-                } else {
-                    $this->logger->error("\aportela\MediaWikiWrapper\File::get - Error: empty body on API response", [$url]);
-                    throw new \aportela\MediaWikiWrapper\Exception\InvalidAPIResponse("Empty body on API response for URL: {$url}");
-                }
+        $url = sprintf(self::REST_API_FILE_GET, $this->title);
+        $this->setCacheFormat(\aportela\SimpleFSCache\CacheFormat::JSON);
+        $cacheHash = md5($url);
+        $cacheData = $this->getCache($cacheHash);
+        if (! is_string($cacheData)) {
+            $responseBody = $this->httpGET($url);
+            if (! empty($responseBody)) {
+                $this->saveCache($cacheHash, $responseBody);
+                $this->parseGetData($responseBody);
             } else {
-                if (!empty($cacheData)) {
-                    $this->parseGetData($cacheData);
-                } else {
-                    $this->logger->error("\aportela\MediaWikiWrapper\File::get - Error: cached data for identifier is empty", [$cacheHash]);
-                    throw new \aportela\MediaWikiWrapper\Exception\InvalidCacheException("Cached data for identifier ({$cacheHash}) is empty");
-                }
+                $this->logger->error("\aportela\MediaWikiWrapper\Wikipedia\File::get - Error: empty body on API response", [$url]);
+                throw new \aportela\MediaWikiWrapper\Exception\InvalidAPIResponse("Empty body on API response for URL: {$url}");
             }
         } else {
-            throw new \aportela\MediaWikiWrapper\Exception\InvalidTitleException("");
+            if (!empty($cacheData)) {
+                $this->parseGetData($cacheData);
+            } else {
+                $this->logger->error("\aportela\MediaWikiWrapper\Wikipedia\File::get - Error: cached data for identifier is empty", [$cacheHash]);
+                throw new \aportela\MediaWikiWrapper\Exception\InvalidCacheException("Cached data for identifier ({$cacheHash}) is empty");
+            }
         }
     }
 
