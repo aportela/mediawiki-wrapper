@@ -14,7 +14,6 @@ class File extends \aportela\MediaWikiWrapper\API
     {
         $json = $this->parseJSONString($raw);
         if (
-
             isset($json->preferred) &&
             is_object($json->preferred) &&
             isset($json->preferred->mediatype) &&
@@ -90,7 +89,7 @@ class File extends \aportela\MediaWikiWrapper\API
             }
         } else {
             $this->logger->error("\aportela\MediaWikiWrapper\Wikipedia\File::get - Error: empty title");
-            throw new \InvalidArgumentException("empty title");
+            throw new \InvalidArgumentException("Empty title");
         }
     }
 
@@ -113,6 +112,8 @@ class File extends \aportela\MediaWikiWrapper\API
                     $url = $this->thumbnail->url;
                 }
                 break;
+            default:
+                throw new \InvalidArgumentException("Invalid informationType");
         }
         return ($url);
     }

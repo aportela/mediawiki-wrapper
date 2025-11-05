@@ -21,7 +21,7 @@ class FileTest extends BaseTest
     public function testGetMissingTitle(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage("empty title");
+        $this->expectExceptionMessage("Empty title");
         $f = new \aportela\MediaWikiWrapper\Wikipedia\File(self::$logger, \aportela\MediaWikiWrapper\APIType::REST, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
         $f->get("");
     }
