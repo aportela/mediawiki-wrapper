@@ -16,6 +16,9 @@ class PageTest extends BaseTest
     public function testGetJsonFromTitle(): void
     {
         $p = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\APIType::REST, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
+        /**
+         * @var \stdClass $obj
+         */
         $obj = $p->getJSONFromTitle(self::EXISTENT_PAGE_TITLE, self::EXISTENT_PAGE_LANGUAGE);
         $this->assertIsInt($obj->id);
         $this->assertEquals($obj->id, 38930);
@@ -35,6 +38,9 @@ class PageTest extends BaseTest
     public function testGetJsonFromUrl(): void
     {
         $p = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\APIType::REST, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
+        /**
+         * @var \stdClass $object
+         */
         $object = $p->getJSONFromURL(self::EXISTENT_PAGE_URL, self::EXISTENT_PAGE_LANGUAGE);
         $this->assertEquals(self::EXISTENT_PAGE_TITLE, $object->title);
     }
