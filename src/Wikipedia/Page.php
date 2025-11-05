@@ -48,29 +48,18 @@ class Page extends \aportela\MediaWikiWrapper\API
             $cacheData = $this->getCache($cacheHash);
             if (! is_string($cacheData)) {
                 $this->logger->debug("MediaWikiWrapper\Wikipedia\Page::getJSON", array("title" => $this->title));
-                $response = $this->httpGET($url);
-                if ($response->code == 200) {
-                    $this->resetThrottle();
-                    $json = json_decode($response->body);
+                $responseBody = $this->httpGET($url);
+                if (! empty($responseBody)) {
+                    $json = json_decode($responseBody);
                     if (json_last_error() != JSON_ERROR_NONE) {
                         throw new \aportela\MediaWikiWrapper\Exception\InvalidAPIFormatException(json_last_error_msg());
                     } else {
-                        $this->saveCache($cacheHash, $response->body);
+                        $this->saveCache($cacheHash, $responseBody);
                         return ($json);
                     }
-                } elseif ($response->code == 503) {
-                    $this->incrementThrottle();
-                    throw new \aportela\MediaWikiWrapper\Exception\RateLimitExceedException("title: {$this->title}", $response->code);
                 } else {
-                    $json = json_decode($response->body);
-                    if (json_last_error() != JSON_ERROR_NONE) {
-                        throw new \aportela\MediaWikiWrapper\Exception\InvalidAPIFormatException(json_last_error_msg());
-                    }
-                    if ($json->httpCode == 404) {
-                        throw new \aportela\MediaWikiWrapper\Exception\NotFoundException($this->title);
-                    } else {
-                        throw new \aportela\MediaWikiWrapper\Exception\HTTPException($this->title, $json->httpCode);
-                    }
+                    $this->logger->error("\aportela\MediaWikiWrapper\Page::get - Error: empty body on API response", [$url]);
+                    throw new \aportela\MediaWikiWrapper\Exception\InvalidAPIResponse("Empty body on API response for URL: {$url}");
                 }
             } else {
                 if (!empty($cacheData)) {
@@ -102,28 +91,21 @@ class Page extends \aportela\MediaWikiWrapper\API
             $cacheHash = md5($url);
             $cacheData = $this->getCache($cacheHash);
             if (! is_string($cacheData)) {
-                $this->logger->debug("MediaWikiWrapper\Wikipedia\Page::getHTML", array("title" => $this->title));
-                $response = $this->httpGET($url);
-                if ($response->code == 200) {
-                    $this->resetThrottle();
-                    $this->saveCache($cacheHash, $response->body);
-                    return ($response->body);
-                } elseif ($response->code == 503) {
-                    $this->incrementThrottle();
-                    throw new \aportela\MediaWikiWrapper\Exception\RateLimitExceedException("title: {$this->title}", $response->code);
+                $responseBody = $this->httpGET($url);
+                if (! empty($responseBody)) {
+                    $this->saveCache($cacheHash, $responseBody);
+                    return ($responseBody);
                 } else {
-                    $json = json_decode($response->body);
-                    if (json_last_error() != JSON_ERROR_NONE) {
-                        throw new \aportela\MediaWikiWrapper\Exception\InvalidAPIFormatException(json_last_error_msg());
-                    }
-                    if ($json->httpCode == 404) {
-                        throw new \aportela\MediaWikiWrapper\Exception\NotFoundException($this->title);
-                    } else {
-                        throw new \aportela\MediaWikiWrapper\Exception\HTTPException($this->title, $json->httpCode);
-                    }
+                    $this->logger->error("\aportela\MediaWikiWrapper\Wikipedia\Page::getHTML - Error: empty body on API response", [$url]);
+                    throw new \aportela\MediaWikiWrapper\Exception\InvalidAPIResponse("Empty body on API response for URL: {$url}");
                 }
             } else {
-                return ($cacheData);
+                if (!empty($cacheData)) {
+                    return ($cacheData);
+                } else {
+                    $this->logger->error("\aportela\MediaWikiWrapper\Wikipedia\Page::getHTML - Error: cached data for identifier is empty", [$cacheHash]);
+                    throw new \aportela\MediaWikiWrapper\Exception\InvalidCacheException("Cached data for identifier ({$cacheHash}) is empty");
+                }
             }
         } else {
             throw new \aportela\MediaWikiWrapper\Exception\InvalidTitleException("");
@@ -138,29 +120,20 @@ class Page extends \aportela\MediaWikiWrapper\API
             $cacheHash = md5($url);
             $cacheData = $this->getCache($cacheHash);
             if (! is_string($cacheData)) {
-                $this->logger->debug("MediaWikiWrapper\Wikipedia\Page::getIntoExtract", array("title" => $this->title));
-                $response = $this->httpGET($url);
-                if ($response->code == 200) {
-                    $this->resetThrottle();
-                    $json = json_decode($response->body);
+                $responseBody = $this->httpGET($url);
+                if (! empty($responseBody)) {
+                    $json = json_decode($responseBody);
                     $pages = get_object_vars($json->query->pages);
                     $page = array_keys($pages)[0];
                     if ($page != -1) {
                         $this->saveCache($cacheHash, $json->query->pages->{$page}->extract);
                         return ($json->query->pages->{$page}->extract);
                     } else {
-                        throw new \aportela\MediaWikiWrapper\Exception\NotFoundException($this->title);
+                        throw new \aportela\MediaWikiWrapper\Exception\NotFoundException((string)$this->title);
                     }
                 } else {
-                    $json = json_decode($response->body);
-                    if (json_last_error() != JSON_ERROR_NONE) {
-                        throw new \aportela\MediaWikiWrapper\Exception\InvalidAPIFormatException(json_last_error_msg());
-                    }
-                    if ($json->httpCode == 404) {
-                        throw new \aportela\MediaWikiWrapper\Exception\NotFoundException($this->title);
-                    } else {
-                        throw new \aportela\MediaWikiWrapper\Exception\HTTPException($this->title, $json->httpCode);
-                    }
+                    $this->logger->error("\aportela\MediaWikiWrapper\Wikipedia\Page::getIntroPlainText - Error: empty body on API response", [$url]);
+                    throw new \aportela\MediaWikiWrapper\Exception\InvalidAPIResponse("Empty body on API response for URL: {$url}");
                 }
             } else {
                 return ($cacheData);

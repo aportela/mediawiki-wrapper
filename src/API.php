@@ -92,15 +92,30 @@ abstract class API
     }
 
     /**
-     * http handler GET method wrapper for catching CurlExecException (connection errors / server busy ?)
+     * http handler GET method wrapper for manage throttle & response, also catches CurlExecException (connection errors / server busy ?)
      */
-    protected function httpGET(string $url): \aportela\HTTPRequestWrapper\HTTPResponse
+    protected function httpGET(string $url): ?string
     {
         $this->logger->debug("\aportela\MediaWikiWrapper\Entity::httpGET - Opening URL", [$url]);
         try {
-            return ($this->http->GET($url));
+            $this->checkThrottle();
+            $response = $this->http->GET($url);
+            if ($response->code == 200) {
+                $this->resetThrottle();
+                return ($response->body);
+            } elseif ($response->code == 404) {
+                $this->logger->error("\aportela\MediaWikiWrapper\Entity::httpGET - Error opening URL", [$url, $response->code, $response->body]);
+                throw new \aportela\MediaWikiWrapper\Exception\NotFoundException("Error opening URL: {$url}", $response->code);
+            } elseif ($response->code == 503) {
+                $this->incrementThrottle();
+                $this->logger->error("\aportela\MediaWikiWrapper\Entity::httpGET - Error opening URL", [$url, $response->code, $response->body]);
+                throw new \aportela\MediaWikiWrapper\Exception\RateLimitExceedException("Error opening URL: {$url}", $response->code);
+            } else {
+                $this->logger->error("\aportela\MediaWikiWrapper\Entity::httpGET - Error opening URL", [$url, $response->code, $response->body]);
+                throw new \aportela\MediaWikiWrapper\Exception\HTTPException("Error opening URL: {$url}", $response->code);
+            }
         } catch (\aportela\HTTPRequestWrapper\Exception\CurlExecException $e) {
-            $this->logger->error("Error opening URL " . $url, [$e->getCode(), $e->getMessage()]);
+            $this->logger->error("\aportela\MediaWikiWrapper\Entity::httpGET - Error opening URL", [$url, $e->getCode(), $e->getMessage()]);
             $this->incrementThrottle(); // sometimes api calls return connection error, interpret this as rate limit response
             throw new \aportela\MediaWikiWrapper\Exception\RemoteAPIServerConnectionException("Error opening URL: {$url}", 0, $e);
         }
