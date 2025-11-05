@@ -111,12 +111,16 @@ class Page extends \aportela\MediaWikiWrapper\API
                 $responseBody = $this->httpGET($url);
                 if (! empty($responseBody)) {
                     $json = $this->parseJSONString($responseBody);
-                    if (isset($json->query)) {
+                    if (isset($json->query) && is_object($json->query) && isset($json->query->pages) && is_object($json->query->pages)) {
                         $pages = get_object_vars($json->query->pages);
                         $page = array_keys($pages)[0];
                         if ($page != -1) {
-                            $this->saveCache($cacheHash, $json->query->pages->{$page}->extract);
-                            return ($json->query->pages->{$page}->extract);
+                            if (isset($json->query->pages->{$page}) && is_object($json->query->pages->{$page}) && isset($json->query->pages->{$page}->extract) && is_string($json->query->pages->{$page}->extract)) {
+                                $this->saveCache($cacheHash, $json->query->pages->{$page}->extract);
+                                return ($json->query->pages->{$page}->extract);
+                            } else {
+                                throw new \aportela\MediaWikiWrapper\Exception\NotFoundException((string)$this->title);
+                            }
                         } else {
                             throw new \aportela\MediaWikiWrapper\Exception\NotFoundException((string)$this->title);
                         }
