@@ -33,23 +33,23 @@ class File extends \aportela\MediaWikiWrapper\API
         if (isset($json->original)) {
             $this->original = new \aportela\MediaWikiWrapper\FileInformation(
                 \aportela\MediaWikiWrapper\FileInformationType::ORIGINAL,
-                $json->preferred->mediatype,
-                $json->preferred->size,
-                $json->preferred->width,
-                $json->preferred->height,
-                $json->preferred->duration,
-                $json->preferred->url
+                $json->original->mediatype,
+                $json->original->size,
+                $json->original->width,
+                $json->original->height,
+                $json->original->duration,
+                $json->original->url
             );
         }
         if (isset($json->thumbnail)) {
             $this->thumbnail = new \aportela\MediaWikiWrapper\FileInformation(
                 \aportela\MediaWikiWrapper\FileInformationType::THUMBNAIL,
-                $json->preferred->mediatype,
-                $json->preferred->size,
-                $json->preferred->width,
-                $json->preferred->height,
-                $json->preferred->duration,
-                $json->preferred->url
+                $json->thumbnail->mediatype,
+                $json->thumbnail->size,
+                $json->thumbnail->width,
+                $json->thumbnail->height,
+                $json->thumbnail->duration,
+                $json->thumbnail->url
             );
         }
     }
@@ -62,7 +62,7 @@ class File extends \aportela\MediaWikiWrapper\API
             $this->setCacheFormat(\aportela\SimpleFSCache\CacheFormat::JSON);
             $cacheHash = md5($url);
             $cacheData = $this->getCache($cacheHash);
-            if ($cacheData === false) {
+            if (! is_string($cacheData)) {
                 $response = $this->httpGET($url);
                 $json = json_decode($response->body);
                 if (json_last_error() != JSON_ERROR_NONE) {
@@ -82,11 +82,20 @@ class File extends \aportela\MediaWikiWrapper\API
                     }
                 }
             } else {
-                $json = json_decode($cacheData);
+                if (!empty($cacheData)) {
+                    $json = json_decode($cacheData);
+                } else {
+                    $this->logger->error("\aportela\MediaWikiWrapper\Artist::get - Error: cached data for identifier is empty", [$cacheHash]);
+                    throw new \aportela\MediaWikiWrapper\Exception\InvalidCacheException("Cached data for identifier ({$cacheHash}) is empty");
+                }
                 if (json_last_error() != JSON_ERROR_NONE) {
                     throw new \aportela\MediaWikiWrapper\Exception\InvalidAPIFormatException(json_last_error_msg());
                 } else {
-                    $this->parseGetData($json);
+                    if (is_object($json)) {
+                        $this->parseGetData($json);
+                    } else {
+                        throw new \aportela\MediaWikiWrapper\Exception\InvalidAPIFormatException(json_last_error_msg());
+                    }
                 }
             }
         } else {
