@@ -6,54 +6,50 @@ class Item extends \aportela\MediaWikiWrapper\API
 {
     public const REST_API_GET_WIKIPEDIA_TITLE = "https://www.wikidata.org/w/api.php?action=wbgetentities&format=json&props=sitelinks&ids=%s&sitefilter=%swiki";
 
-    protected ?string $item;
-
-    public function setItem(string $item): void
+    public function getWikipediaTitleFromIdentifier(string $identifier, \aportela\MediaWikiWrapper\Language $language): string
     {
-        $this->item = $item;
-    }
-
-    public function setURL(string $url): void
-    {
-        $urlFields = parse_url($url);
-        if (is_array($urlFields) && isset($urlFields["host"]) && $urlFields["host"] == "www.wikidata.org" && isset($urlFields["path"]) && ! empty($urlFields["path"])) {
-            $fields = explode("/", $urlFields["path"]);
-            $totalFields = count($fields);
-            if ($totalFields == 3 && $fields[1] == "wiki") {
-                $this->item = $fields[2];
-            } else {
-                throw new \aportela\MediaWikiWrapper\Exception\InvalidURLException($url);
-            }
-        } else {
-            throw new \aportela\MediaWikiWrapper\Exception\InvalidURLException($url);
-        }
-    }
-
-    public function getWikipediaTitle(\aportela\MediaWikiWrapper\Language $language): string
-    {
-        if (!empty($this->item)) {
-            $url = sprintf(self::REST_API_GET_WIKIPEDIA_TITLE, $this->item, $language->value);
-            $this->logger->debug("MediaWikiWrapper\Wikidata\Item::getWikipediaTitle", array("item" => $this->item, "language" => $language->value));
+        if (!empty($identifier)) {
+            $url = sprintf(self::REST_API_GET_WIKIPEDIA_TITLE, $identifier, $language->value);
             $responseBody = $this->httpGET($url);
             if (! empty($responseBody)) {
                 $json = $this->parseJSONString($responseBody);
                 if (
                     isset($json->entities) &&
-                    isset($json->entities->{$this->item}) && is_object($json->entities->{$this->item}) &&
-                    isset($json->entities->{$this->item}->sitelinks) && is_object($json->entities->{$this->item}->sitelinks) &&
-                    isset($json->entities->{$this->item}->sitelinks->{$language->value . "wiki"}) && is_object($json->entities->{$this->item}->sitelinks->{$language->value . "wiki"}) &&
-                    isset($json->entities->{$this->item}->sitelinks->{$language->value . "wiki"}->title) && is_string($json->entities->{$this->item}->sitelinks->{$language->value . "wiki"}->title)
+                    isset($json->entities->{$identifier}) && is_object($json->entities->{$identifier}) &&
+                    isset($json->entities->{$identifier}->sitelinks) && is_object($json->entities->{$identifier}->sitelinks) &&
+                    isset($json->entities->{$identifier}->sitelinks->{$language->value . "wiki"}) && is_object($json->entities->{$identifier}->sitelinks->{$language->value . "wiki"}) &&
+                    isset($json->entities->{$identifier}->sitelinks->{$language->value . "wiki"}->title) && is_string($json->entities->{$identifier}->sitelinks->{$language->value . "wiki"}->title)
                 ) {
-                    return ($json->entities->{$this->item}->sitelinks->{$language->value . "wiki"}->title);
+                    return ($json->entities->{$identifier}->sitelinks->{$language->value . "wiki"}->title);
                 } else {
-                    throw new \aportela\MediaWikiWrapper\Exception\NotFoundException($this->item);
+                    $this->logger->error("\aportela\MediaWikiWrapper\Wikidata\Item::getWikipediaTitle - Error: missing wikipedia title json property", [$identifier, $language->value, $url]);
+                    throw new \aportela\MediaWikiWrapper\Exception\NotFoundException("Error: missing wikipedia title json property");
                 }
             } else {
                 $this->logger->error("\aportela\MediaWikiWrapper\Item::getWikipediaTitle - Error: empty body on API response", [$url]);
                 throw new \aportela\MediaWikiWrapper\Exception\InvalidAPIResponse("Empty body on API response for URL: {$url}");
             }
         } else {
-            throw new \aportela\MediaWikiWrapper\Exception\InvalidItemException("empty item");
+            $this->logger->error("\aportela\MediaWikiWrapper\Wikidata\Item::setItem - Error: empty identifier");
+            throw new \InvalidArgumentException("empty identifier");
+        }
+    }
+
+    public function getWikipediaTitleFromURL(string $url, \aportela\MediaWikiWrapper\Language $language): string
+    {
+        $urlFields = parse_url($url);
+        if (is_array($urlFields) && isset($urlFields["host"]) && $urlFields["host"] == "www.wikidata.org" && isset($urlFields["path"]) && ! empty($urlFields["path"])) {
+            $fields = explode("/", $urlFields["path"]);
+            $totalFields = count($fields);
+            if ($totalFields == 3 && $fields[1] == "wiki") {
+                return ($this->getWikipediaTitleFromIdentifier($fields[2], $language));
+            } else {
+                $this->logger->error("\aportela\MediaWikiWrapper\Wikidata\Item::setItemFromURL - Error: invalid URL: {$url}");
+                throw new \InvalidArgumentException("Invalid URL: {$url}");
+            }
+        } else {
+            $this->logger->error("\aportela\MediaWikiWrapper\Wikidata\Item::setItemFromURL - Error: invalid URL: {$url}");
+            throw new \InvalidArgumentException("Invalid URL: {$url}");
         }
     }
 }
