@@ -22,7 +22,11 @@ class Page extends \aportela\MediaWikiWrapper\API
     public function setURL(string $url): void
     {
         $urlFields = parse_url($url);
-        if (is_array($urlFields) &&  str_ends_with($urlFields["host"], "wikipedia.org")) {
+        if (
+            is_array($urlFields) &&
+            isset($urlFields["host"]) && ! empty($urlFields["host"]) && str_ends_with($urlFields["host"], "wikipedia.org") &&
+            isset($urlFields["path"]) && ! empty($urlFields["path"])
+        ) {
             $fields = explode("/", $urlFields["path"]);
             $totalFields = count($fields);
             if ($totalFields == 3 && $fields[1] == "wiki") {
@@ -42,7 +46,7 @@ class Page extends \aportela\MediaWikiWrapper\API
             $this->setCacheFormat(\aportela\SimpleFSCache\CacheFormat::JSON);
             $cacheHash = md5($url);
             $cacheData = $this->getCache($cacheHash);
-            if ($cacheData === false) {
+            if (! is_string($cacheData)) {
                 $this->logger->debug("MediaWikiWrapper\Wikipedia\Page::getJSON", array("title" => $this->title));
                 $response = $this->httpGET($url);
                 if ($response->code == 200) {
@@ -69,11 +73,20 @@ class Page extends \aportela\MediaWikiWrapper\API
                     }
                 }
             } else {
-                $json = json_decode($cacheData);
+                if (!empty($cacheData)) {
+                    $json = json_decode($cacheData);
+                } else {
+                    $this->logger->error("\aportela\MediaWikiWrapper\Artist::get - Error: cached data for identifier is empty", [$cacheHash]);
+                    throw new \aportela\MediaWikiWrapper\Exception\InvalidCacheException("Cached data for identifier ({$cacheHash}) is empty");
+                }
                 if (json_last_error() != JSON_ERROR_NONE) {
                     throw new \aportela\MediaWikiWrapper\Exception\InvalidAPIFormatException(json_last_error_msg());
                 } else {
-                    return ($json);
+                    if (is_object($json)) {
+                        return ($json);
+                    } else {
+                        throw new \aportela\MediaWikiWrapper\Exception\InvalidAPIFormatException(json_last_error_msg());
+                    }
                 }
             }
         } else {
@@ -88,7 +101,7 @@ class Page extends \aportela\MediaWikiWrapper\API
             $this->setCacheFormat(\aportela\SimpleFSCache\CacheFormat::HTML);
             $cacheHash = md5($url);
             $cacheData = $this->getCache($cacheHash);
-            if ($cacheData === false) {
+            if (! is_string($cacheData)) {
                 $this->logger->debug("MediaWikiWrapper\Wikipedia\Page::getHTML", array("title" => $this->title));
                 $response = $this->httpGET($url);
                 if ($response->code == 200) {
@@ -124,7 +137,7 @@ class Page extends \aportela\MediaWikiWrapper\API
             $this->setCacheFormat(\aportela\SimpleFSCache\CacheFormat::TXT);
             $cacheHash = md5($url);
             $cacheData = $this->getCache($cacheHash);
-            if ($cacheData === false) {
+            if (! is_string($cacheData)) {
                 $this->logger->debug("MediaWikiWrapper\Wikipedia\Page::getIntoExtract", array("title" => $this->title));
                 $response = $this->httpGET($url);
                 if ($response->code == 200) {
