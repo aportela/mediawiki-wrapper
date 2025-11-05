@@ -16,7 +16,7 @@ class Item extends \aportela\MediaWikiWrapper\API
     public function setURL(string $url): void
     {
         $urlFields = parse_url($url);
-        if (is_array($urlFields) && $urlFields["host"] == "www.wikidata.org") {
+        if (is_array($urlFields) && isset($urlFields["host"]) && $urlFields["host"] == "www.wikidata.org" && isset($urlFields["path"]) && ! empty($urlFields["path"])) {
             $fields = explode("/", $urlFields["path"]);
             $totalFields = count($fields);
             if ($totalFields == 3 && $fields[1] == "wiki") {
