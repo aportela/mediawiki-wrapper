@@ -12,7 +12,10 @@ class Page extends \aportela\MediaWikiWrapper\API
     const REST_API_PAGE_LINKS_FILES = "https://en.wikipedia.org/w/rest.php/v1/page/Jupiter/links/media";
     */
 
-    protected ?string $title;
+    public function __construct(\Psr\Log\LoggerInterface $logger, int $throttleDelayMS = self::DEFAULT_THROTTLE_DELAY_MS, ?\aportela\SimpleFSCache\Cache $cache = null)
+    {
+        parent::__construct($logger, \aportela\MediaWikiWrapper\APIType::REST, $throttleDelayMS, $cache);
+    }
 
     private function getTitleFromURL(string $url): string
     {

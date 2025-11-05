@@ -15,20 +15,20 @@ class ItemTest extends BaseTest
     private const EXISTENT_ITEM_WIKIPEDIA_TITLE = "Jupiter";
     public function testGetWikipediaTitleFromItem(): void
     {
-        $i = new \aportela\MediaWikiWrapper\Wikidata\Item(self::$logger, \aportela\MediaWikiWrapper\APIType::REST, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
+        $i = new \aportela\MediaWikiWrapper\Wikidata\Item(self::$logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
         $this->assertEquals($i->getWikipediaTitleFromIdentifier(self::EXISTENT_ITEM_IDENTIFIER, self::EXISTENT_ITEM_WIKIPEDIA_LANG), self::EXISTENT_ITEM_WIKIPEDIA_TITLE);
     }
 
     public function testGetWikipediaTitleFromItemMissingItem(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $i = new \aportela\MediaWikiWrapper\Wikidata\Item(self::$logger, \aportela\MediaWikiWrapper\APIType::REST, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
+        $i = new \aportela\MediaWikiWrapper\Wikidata\Item(self::$logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
         $i->getWikipediaTitleFromIdentifier(self::INVALID_ITEM_IDENTIFIER, self::EXISTENT_ITEM_WIKIPEDIA_LANG);
     }
 
     public function testGetWikipediaTitleFromUrl(): void
     {
-        $i = new \aportela\MediaWikiWrapper\Wikidata\Item(self::$logger, \aportela\MediaWikiWrapper\APIType::REST, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
+        $i = new \aportela\MediaWikiWrapper\Wikidata\Item(self::$logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
         $this->assertEquals($i->getWikipediaTitleFromURL(self::EXISTENT_ITEM_URL, self::EXISTENT_ITEM_WIKIPEDIA_LANG), self::EXISTENT_ITEM_WIKIPEDIA_TITLE);
     }
 
@@ -36,7 +36,7 @@ class ItemTest extends BaseTest
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage("Invalid URL: " . self::INVALID_ITEM_WIKIDATA_URL);
-        $i = new \aportela\MediaWikiWrapper\Wikidata\Item(self::$logger, \aportela\MediaWikiWrapper\APIType::REST, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
+        $i = new \aportela\MediaWikiWrapper\Wikidata\Item(self::$logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
         $i->getWikipediaTitleFromURL(self::INVALID_ITEM_WIKIDATA_URL, self::EXISTENT_ITEM_WIKIPEDIA_LANG);
     }
 
@@ -44,7 +44,7 @@ class ItemTest extends BaseTest
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage("Invalid URL: " . self::INVALID_ITEM_URL);
-        $i = new \aportela\MediaWikiWrapper\Wikidata\Item(self::$logger, \aportela\MediaWikiWrapper\APIType::REST, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
+        $i = new \aportela\MediaWikiWrapper\Wikidata\Item(self::$logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
         $i->getWikipediaTitleFromURL(self::INVALID_ITEM_URL, self::EXISTENT_ITEM_WIKIPEDIA_LANG);
     }
 
@@ -53,7 +53,7 @@ class ItemTest extends BaseTest
         $this->expectException(\aportela\MediaWikiWrapper\Exception\NotFoundException::class);
         $this->expectExceptionMessage("Error: missing wikipedia title json property");
         $item = "Q_000" . time();
-        $i = new \aportela\MediaWikiWrapper\Wikidata\Item(self::$logger, \aportela\MediaWikiWrapper\APIType::REST, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
+        $i = new \aportela\MediaWikiWrapper\Wikidata\Item(self::$logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
         $i->getWikipediaTitleFromIdentifier($item, self::EXISTENT_ITEM_WIKIPEDIA_LANG);
     }
 }

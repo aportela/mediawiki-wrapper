@@ -10,6 +10,11 @@ class File extends \aportela\MediaWikiWrapper\API
     protected ?\aportela\MediaWikiWrapper\FileInformation $original = null;
     protected ?\aportela\MediaWikiWrapper\FileInformation $thumbnail = null;
 
+    public function __construct(\Psr\Log\LoggerInterface $logger, int $throttleDelayMS = self::DEFAULT_THROTTLE_DELAY_MS, ?\aportela\SimpleFSCache\Cache $cache = null)
+    {
+        parent::__construct($logger, \aportela\MediaWikiWrapper\APIType::REST, $throttleDelayMS, $cache);
+    }
+
     private function parseGetData(string $raw): void
     {
         $json = $this->parseJSONString($raw);
