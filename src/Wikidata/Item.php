@@ -41,6 +41,7 @@ class Item extends \aportela\MediaWikiWrapper\API
                     throw new \aportela\MediaWikiWrapper\Exception\InvalidAPIFormatException(json_last_error_msg());
                 } else {
                     if (
+                        is_object($json) &&
                         isset($json->entities) &&
                         isset($json->entities->{$this->item}) &&
                         isset($json->entities->{$this->item}->sitelinks) &&

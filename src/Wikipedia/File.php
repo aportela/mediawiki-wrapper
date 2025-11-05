@@ -23,38 +23,40 @@ class File extends \aportela\MediaWikiWrapper\API
         if (json_last_error() != JSON_ERROR_NONE) {
             throw new \aportela\MediaWikiWrapper\Exception\InvalidAPIFormatException(json_last_error_msg());
         } else {
-            if (isset($json->preferred)) {
-                $this->prefered = new \aportela\MediaWikiWrapper\FileInformation(
-                    \aportela\MediaWikiWrapper\FileInformationType::PREFERRED,
-                    $json->preferred->mediatype,
-                    $json->preferred->size,
-                    $json->preferred->width,
-                    $json->preferred->height,
-                    $json->preferred->duration,
-                    $json->preferred->url
-                );
-            }
-            if (isset($json->original)) {
-                $this->original = new \aportela\MediaWikiWrapper\FileInformation(
-                    \aportela\MediaWikiWrapper\FileInformationType::ORIGINAL,
-                    $json->original->mediatype,
-                    $json->original->size,
-                    $json->original->width,
-                    $json->original->height,
-                    $json->original->duration,
-                    $json->original->url
-                );
-            }
-            if (isset($json->thumbnail)) {
-                $this->thumbnail = new \aportela\MediaWikiWrapper\FileInformation(
-                    \aportela\MediaWikiWrapper\FileInformationType::THUMBNAIL,
-                    $json->thumbnail->mediatype,
-                    $json->thumbnail->size,
-                    $json->thumbnail->width,
-                    $json->thumbnail->height,
-                    $json->thumbnail->duration,
-                    $json->thumbnail->url
-                );
+            if (is_object($json)) {
+                if (isset($json->preferred)) {
+                    $this->prefered = new \aportela\MediaWikiWrapper\FileInformation(
+                        \aportela\MediaWikiWrapper\FileInformationType::PREFERRED,
+                        $json->preferred->mediatype,
+                        $json->preferred->size,
+                        $json->preferred->width,
+                        $json->preferred->height,
+                        $json->preferred->duration,
+                        $json->preferred->url
+                    );
+                }
+                if (isset($json->original)) {
+                    $this->original = new \aportela\MediaWikiWrapper\FileInformation(
+                        \aportela\MediaWikiWrapper\FileInformationType::ORIGINAL,
+                        $json->original->mediatype,
+                        $json->original->size,
+                        $json->original->width,
+                        $json->original->height,
+                        $json->original->duration,
+                        $json->original->url
+                    );
+                }
+                if (isset($json->thumbnail)) {
+                    $this->thumbnail = new \aportela\MediaWikiWrapper\FileInformation(
+                        \aportela\MediaWikiWrapper\FileInformationType::THUMBNAIL,
+                        $json->thumbnail->mediatype,
+                        $json->thumbnail->size,
+                        $json->thumbnail->width,
+                        $json->thumbnail->height,
+                        $json->thumbnail->duration,
+                        $json->thumbnail->url
+                    );
+                }
             }
         }
     }

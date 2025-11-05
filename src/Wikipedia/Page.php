@@ -52,10 +52,14 @@ class Page extends \aportela\MediaWikiWrapper\API
                 if (! empty($responseBody)) {
                     $json = json_decode($responseBody);
                     if (json_last_error() != JSON_ERROR_NONE) {
-                        throw new \aportela\MediaWikiWrapper\Exception\InvalidAPIFormatException(json_last_error_msg());
+                        throw new \aportela\MediaWikiWrapper\Exception\InvalidJSONException(json_last_error_msg());
                     } else {
                         $this->saveCache($cacheHash, $responseBody);
-                        return ($json);
+                        if (is_object($json)) {
+                            return ($json);
+                        } else {
+                            throw new \aportela\MediaWikiWrapper\Exception\InvalidJSONException("invalid object");
+                        }
                     }
                 } else {
                     $this->logger->error("\aportela\MediaWikiWrapper\Page::get - Error: empty body on API response", [$url]);
@@ -123,13 +127,22 @@ class Page extends \aportela\MediaWikiWrapper\API
                 $responseBody = $this->httpGET($url);
                 if (! empty($responseBody)) {
                     $json = json_decode($responseBody);
-                    $pages = get_object_vars($json->query->pages);
-                    $page = array_keys($pages)[0];
-                    if ($page != -1) {
-                        $this->saveCache($cacheHash, $json->query->pages->{$page}->extract);
-                        return ($json->query->pages->{$page}->extract);
+                    if (is_object($json)) {
+                        if (isset($json->query)) {
+                            $pages = get_object_vars($json->query->pages);
+                            $page = array_keys($pages)[0];
+                            if ($page != -1) {
+                                $this->saveCache($cacheHash, $json->query->pages->{$page}->extract);
+                                return ($json->query->pages->{$page}->extract);
+                            } else {
+                                throw new \aportela\MediaWikiWrapper\Exception\NotFoundException((string)$this->title);
+                            }
+                        } else {
+                            throw new \aportela\MediaWikiWrapper\Exception\NotFoundException((string)$this->title);
+                        }
                     } else {
-                        throw new \aportela\MediaWikiWrapper\Exception\NotFoundException((string)$this->title);
+                        $this->logger->error("\aportela\MediaWikiWrapper\Wikipedia\Page::getIntroPlainText - Error: invalid json object", [$responseBody]);
+                        throw new \aportela\MediaWikiWrapper\Exception\InvalidJSONException("invalid object");
                     }
                 } else {
                     $this->logger->error("\aportela\MediaWikiWrapper\Wikipedia\Page::getIntroPlainText - Error: empty body on API response", [$url]);
