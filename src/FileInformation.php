@@ -12,7 +12,8 @@ final class FileInformation
     public ?int $duration;
     public string $url;
 
-    public function __construct(\aportela\MediaWikiWrapper\FileInformationType $fileInformationType, string $mediaType, ?int $size = null, ?int $width = null, ?int $height = null, ?int $duration = null, string $url)
+    // TODO: change URL to non null
+    public function __construct(\aportela\MediaWikiWrapper\FileInformationType $fileInformationType, string $mediaType, ?int $size = null, ?int $width = null, ?int $height = null, ?int $duration = null, string $url = "")
     {
         $this->fileInformationType = $fileInformationType;
         $this->mediaType = $mediaType;
