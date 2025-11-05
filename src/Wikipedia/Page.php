@@ -50,36 +50,20 @@ class Page extends \aportela\MediaWikiWrapper\API
                 $this->logger->debug("MediaWikiWrapper\Wikipedia\Page::getJSON", array("title" => $this->title));
                 $responseBody = $this->httpGET($url);
                 if (! empty($responseBody)) {
-                    $json = json_decode($responseBody);
-                    if (json_last_error() != JSON_ERROR_NONE) {
-                        throw new \aportela\MediaWikiWrapper\Exception\InvalidJSONException(json_last_error_msg());
-                    } else {
-                        $this->saveCache($cacheHash, $responseBody);
-                        if (is_object($json)) {
-                            return ($json);
-                        } else {
-                            throw new \aportela\MediaWikiWrapper\Exception\InvalidJSONException("invalid object");
-                        }
-                    }
+                    $json = $this->parseJSONString($responseBody);
+                    $this->saveCache($cacheHash, $responseBody);
+                    return ($json);
                 } else {
                     $this->logger->error("\aportela\MediaWikiWrapper\Page::get - Error: empty body on API response", [$url]);
                     throw new \aportela\MediaWikiWrapper\Exception\InvalidAPIResponse("Empty body on API response for URL: {$url}");
                 }
             } else {
                 if (!empty($cacheData)) {
-                    $json = json_decode($cacheData);
+                    $json = $this->parseJSONString($cacheData);
+                    return ($json);
                 } else {
-                    $this->logger->error("\aportela\MediaWikiWrapper\Artist::get - Error: cached data for identifier is empty", [$cacheHash]);
+                    $this->logger->error("\aportela\MediaWikiWrapper\Wikipedia\Page::getJSON - Error: cached data for identifier is empty", [$cacheHash]);
                     throw new \aportela\MediaWikiWrapper\Exception\InvalidCacheException("Cached data for identifier ({$cacheHash}) is empty");
-                }
-                if (json_last_error() != JSON_ERROR_NONE) {
-                    throw new \aportela\MediaWikiWrapper\Exception\InvalidAPIFormatException(json_last_error_msg());
-                } else {
-                    if (is_object($json)) {
-                        return ($json);
-                    } else {
-                        throw new \aportela\MediaWikiWrapper\Exception\InvalidAPIFormatException(json_last_error_msg());
-                    }
                 }
             }
         } else {
@@ -126,17 +110,13 @@ class Page extends \aportela\MediaWikiWrapper\API
             if (! is_string($cacheData)) {
                 $responseBody = $this->httpGET($url);
                 if (! empty($responseBody)) {
-                    $json = json_decode($responseBody);
-                    if (is_object($json)) {
-                        if (isset($json->query)) {
-                            $pages = get_object_vars($json->query->pages);
-                            $page = array_keys($pages)[0];
-                            if ($page != -1) {
-                                $this->saveCache($cacheHash, $json->query->pages->{$page}->extract);
-                                return ($json->query->pages->{$page}->extract);
-                            } else {
-                                throw new \aportela\MediaWikiWrapper\Exception\NotFoundException((string)$this->title);
-                            }
+                    $json = $this->parseJSONString($responseBody);
+                    if (isset($json->query)) {
+                        $pages = get_object_vars($json->query->pages);
+                        $page = array_keys($pages)[0];
+                        if ($page != -1) {
+                            $this->saveCache($cacheHash, $json->query->pages->{$page}->extract);
+                            return ($json->query->pages->{$page}->extract);
                         } else {
                             throw new \aportela\MediaWikiWrapper\Exception\NotFoundException((string)$this->title);
                         }
