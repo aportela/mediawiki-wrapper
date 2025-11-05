@@ -39,7 +39,7 @@ class Page extends \aportela\MediaWikiWrapper\API
         }
     }
 
-    public function getJSONFromTitle(string $title, \aportela\MediaWikiWrapper\Language $language): object
+    public function getJSONFromTitle(string $title, \aportela\MediaWikiWrapper\Language $language = \aportela\MediaWikiWrapper\Language::ENGLISH): object
     {
         if (!empty($title)) {
             $url = sprintf(self::REST_API_PAGE_JSON, $language->value, $title);
@@ -71,12 +71,12 @@ class Page extends \aportela\MediaWikiWrapper\API
         }
     }
 
-    public function getJSONFromURL(string $url, \aportela\MediaWikiWrapper\Language $language): object
+    public function getJSONFromURL(string $url, \aportela\MediaWikiWrapper\Language $language = \aportela\MediaWikiWrapper\Language::ENGLISH): object
     {
         return ($this->getJSONFromTitle($this->getTitleFromURL($url), $language));
     }
 
-    public function getHTMLFromTitle(string $title, \aportela\MediaWikiWrapper\Language $language): string
+    public function getHTMLFromTitle(string $title, \aportela\MediaWikiWrapper\Language $language = \aportela\MediaWikiWrapper\Language::ENGLISH): string
     {
         if (!empty($title)) {
             $url = sprintf(self::REST_API_PAGE_HTML, $language->value, $title);
@@ -106,12 +106,12 @@ class Page extends \aportela\MediaWikiWrapper\API
         }
     }
 
-    public function getHTMLFromURL(string $url, \aportela\MediaWikiWrapper\Language $language): string
+    public function getHTMLFromURL(string $url, \aportela\MediaWikiWrapper\Language $language = \aportela\MediaWikiWrapper\Language::ENGLISH): string
     {
         return ($this->getHTMLFromTitle($this->getTitleFromURL($url), $language));
     }
 
-    public function getIntroPlainTextFromTitle(string $title, \aportela\MediaWikiWrapper\Language $language): string
+    public function getIntroPlainTextFromTitle(string $title, \aportela\MediaWikiWrapper\Language $language = \aportela\MediaWikiWrapper\Language::ENGLISH): string
     {
         if (!empty($title)) {
             $url = sprintf(self::API_TEXTEXTRACTS_EXTENSION_PAGE_INTRO, $language->value, \aportela\MediaWikiWrapper\APIFormat::JSON->value, $title);
@@ -159,7 +159,7 @@ class Page extends \aportela\MediaWikiWrapper\API
         }
     }
 
-    public function getIntroPlainTextFromURL(string $url, \aportela\MediaWikiWrapper\Language $language): string
+    public function getIntroPlainTextFromURL(string $url, \aportela\MediaWikiWrapper\Language $language = \aportela\MediaWikiWrapper\Language::ENGLISH): string
     {
         return ($this->getIntroPlainTextFromTitle($this->getTitleFromURL($url), $language));
     }

@@ -11,7 +11,7 @@ class Item extends \aportela\MediaWikiWrapper\API
         parent::__construct($logger, \aportela\MediaWikiWrapper\APIType::REST, $throttleDelayMS, $cache);
     }
 
-    public function getWikipediaTitleFromIdentifier(string $identifier, \aportela\MediaWikiWrapper\Language $language): string
+    public function getWikipediaTitleFromIdentifier(string $identifier, \aportela\MediaWikiWrapper\Language $language = \aportela\MediaWikiWrapper\Language::ENGLISH): string
     {
         if (!empty($identifier)) {
             $url = sprintf(self::REST_API_GET_WIKIPEDIA_TITLE, $identifier, $language->value);
@@ -40,7 +40,7 @@ class Item extends \aportela\MediaWikiWrapper\API
         }
     }
 
-    public function getWikipediaTitleFromURL(string $url, \aportela\MediaWikiWrapper\Language $language): string
+    public function getWikipediaTitleFromURL(string $url, \aportela\MediaWikiWrapper\Language $language = \aportela\MediaWikiWrapper\Language::ENGLISH): string
     {
         $urlFields = parse_url($url);
         if (is_array($urlFields) && isset($urlFields["host"]) && $urlFields["host"] == "www.wikidata.org" && isset($urlFields["path"]) && ! empty($urlFields["path"])) {
