@@ -31,7 +31,16 @@ class File extends \aportela\MediaWikiWrapper\API
     private function parseGetData(string $raw): void
     {
         $json = $this->parseJSONString($raw);
-        if (isset($json->preferred)) {
+        if (
+            isset($json->preferred) &&
+            is_object($json->preferred) &&
+            isset($json->preferred->mediatype) &&
+            isset($json->preferred->size) &&
+            isset($json->preferred->width) &&
+            isset($json->preferred->height) &&
+            isset($json->preferred->duration) &&
+            isset($json->preferred->url)
+        ) {
             $this->prefered = new \aportela\MediaWikiWrapper\FileInformation(
                 \aportela\MediaWikiWrapper\FileInformationType::PREFERRED,
                 $json->preferred->mediatype,
@@ -42,7 +51,16 @@ class File extends \aportela\MediaWikiWrapper\API
                 $json->preferred->url
             );
         }
-        if (isset($json->original)) {
+        if (
+            isset($json->original) &&
+            is_object($json->original) &&
+            isset($json->original->mediatype) &&
+            isset($json->original->size) &&
+            isset($json->original->width) &&
+            isset($json->original->height) &&
+            isset($json->original->duration) &&
+            isset($json->original->url)
+        ) {
             $this->original = new \aportela\MediaWikiWrapper\FileInformation(
                 \aportela\MediaWikiWrapper\FileInformationType::ORIGINAL,
                 $json->original->mediatype,
@@ -53,7 +71,16 @@ class File extends \aportela\MediaWikiWrapper\API
                 $json->original->url
             );
         }
-        if (isset($json->thumbnail)) {
+        if (
+            isset($json->thumbnail) &&
+            is_object($json->thumbnail) &&
+            isset($json->thumbnail->mediatype) &&
+            isset($json->thumbnail->size) &&
+            isset($json->thumbnail->width) &&
+            isset($json->thumbnail->height) &&
+            isset($json->thumbnail->duration) &&
+            isset($json->thumbnail->url)
+        ) {
             $this->thumbnail = new \aportela\MediaWikiWrapper\FileInformation(
                 \aportela\MediaWikiWrapper\FileInformationType::THUMBNAIL,
                 $json->thumbnail->mediatype,
