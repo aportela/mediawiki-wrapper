@@ -42,7 +42,7 @@ class Page extends \aportela\MediaWikiWrapper\API
     public function getJSONFromTitle(string $title, \aportela\MediaWikiWrapper\Language $language = \aportela\MediaWikiWrapper\Language::ENGLISH): object
     {
         if (!empty($title)) {
-            $url = sprintf(self::REST_API_PAGE_JSON, $language->value, urlencode($title));
+            $url = sprintf(self::REST_API_PAGE_JSON, $language->value, rawurlencode($title));
             $this->setCacheFormat(\aportela\SimpleFSCache\CacheFormat::JSON);
             $cacheHash = md5($url);
             $cacheData = $this->getCache($cacheHash);
@@ -79,7 +79,7 @@ class Page extends \aportela\MediaWikiWrapper\API
     public function getHTMLFromTitle(string $title, \aportela\MediaWikiWrapper\Language $language = \aportela\MediaWikiWrapper\Language::ENGLISH): string
     {
         if (!empty($title)) {
-            $url = sprintf(self::REST_API_PAGE_HTML, $language->value, urlencode($title));
+            $url = sprintf(self::REST_API_PAGE_HTML, $language->value, rawurlencode($title));
             $this->setCacheFormat(\aportela\SimpleFSCache\CacheFormat::HTML);
             $cacheHash = md5($url);
             $cacheData = $this->getCache($cacheHash);

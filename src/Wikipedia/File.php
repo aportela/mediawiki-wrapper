@@ -71,7 +71,7 @@ class File extends \aportela\MediaWikiWrapper\API
     public function get(string $title): void
     {
         if (! empty($title)) {
-            $url = sprintf(self::REST_API_FILE_GET, urlencode($title));
+            $url = sprintf(self::REST_API_FILE_GET, rawurlencode($title));
             $this->setCacheFormat(\aportela\SimpleFSCache\CacheFormat::JSON);
             $cacheHash = md5($url);
             $cacheData = $this->getCache($cacheHash);
