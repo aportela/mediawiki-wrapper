@@ -14,7 +14,7 @@ class Item extends \aportela\MediaWikiWrapper\API
     public function getWikipediaTitleFromIdentifier(string $identifier, \aportela\MediaWikiWrapper\Language $language = \aportela\MediaWikiWrapper\Language::ENGLISH): string
     {
         if (!empty($identifier)) {
-            $url = sprintf(self::REST_API_GET_WIKIPEDIA_TITLE, $identifier, $language->value);
+            $url = sprintf(self::REST_API_GET_WIKIPEDIA_TITLE, urlencode($identifier), $language->value);
             $responseBody = $this->httpGET($url);
             if (! empty($responseBody)) {
                 $json = $this->parseJSONString($responseBody);
