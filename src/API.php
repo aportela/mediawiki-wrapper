@@ -34,9 +34,7 @@ abstract class API
         $this->cache = $cache;
     }
 
-    public function __destruct()
-    {
-    }
+    public function __destruct() {}
 
     /**
      * increment throttle delay (time between api calls)
@@ -74,7 +72,7 @@ abstract class API
     protected function saveCache(string $hash, string $raw): bool
     {
         if ($this->cache !== null) {
-            return ($this->cache->save($hash, $raw));
+            return ($this->cache->set($hash, $raw));
         } else {
             return (false);
         }
@@ -83,8 +81,9 @@ abstract class API
     protected function getCache(string $hash): bool|string
     {
         if ($this->cache !== null) {
-            if ($cache = $this->cache->get($hash)) {
-                return ($cache);
+            $cacheData = $this->cache->get($hash, false);
+            if (is_string($cacheData)) {
+                return ($cacheData);
             } else {
                 return (false);
             }

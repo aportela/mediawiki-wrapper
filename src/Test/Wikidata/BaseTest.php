@@ -16,7 +16,7 @@ class BaseTest extends \PHPUnit\Framework\TestCase
     public static function setUpBeforeClass(): void
     {
         self::$logger = new \Psr\Log\NullLogger();
-        self::$cache = new \aportela\SimpleFSCache\Cache(self::$logger, \aportela\SimpleFSCache\CacheFormat::NONE, dirname(dirname(dirname(dirname(__FILE__)))) . DIRECTORY_SEPARATOR . "cache", false);
+        self::$cache = new \aportela\SimpleFSCache\Cache(self::$logger, dirname(dirname(dirname(dirname(__FILE__)))) . DIRECTORY_SEPARATOR . "cache", null, \aportela\SimpleFSCache\CacheFormat::NONE);
     }
 
     /**
