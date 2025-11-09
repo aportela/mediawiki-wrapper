@@ -2,11 +2,11 @@
 
 namespace aportela\MediaWikiWrapper\Test\Wikipedia;
 
-require_once dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . "autoload.php";
+require_once dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . "autoload.php";
 
 class FileTest extends BaseTest
 {
-    private const EXISTENT_FILE_TITLE = "Commons-logo.svg";
+    private const string EXISTENT_FILE_TITLE = "Commons-logo.svg";
 
     public function testGet(): void
     {

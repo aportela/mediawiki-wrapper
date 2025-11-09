@@ -2,16 +2,16 @@
 
 namespace aportela\MediaWikiWrapper\Test\Wikipedia;
 
-require_once dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . "autoload.php";
+require_once dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . "autoload.php";
 
 class PageTest extends BaseTest
 {
-    private const EXISTENT_PAGE_TITLE = "Jupiter";
+    private const string EXISTENT_PAGE_TITLE = "Jupiter";
     private const EXISTENT_PAGE_LANGUAGE = \aportela\MediaWikiWrapper\Language::ENGLISH;
-    private const EXISTENT_PAGE_URL = "https://en.wikipedia.org/wiki/Jupiter";
-    private const INVALID_PAGE_TITLE = "";
-    private const NON_EXISTENT_WIKIPEDIA_PAGE_URL = "https://en.wikipedia.org/wiki_NOT_FOUND/Jupiter";
-    private const NON_EXISTENT_PAGE_URL = "https://www.google.es/";
+    private const string EXISTENT_PAGE_URL = "https://en.wikipedia.org/wiki/Jupiter";
+    private const string INVALID_PAGE_TITLE = "";
+    private const string NON_EXISTENT_WIKIPEDIA_PAGE_URL = "https://en.wikipedia.org/wiki_NOT_FOUND/Jupiter";
+    private const string NON_EXISTENT_PAGE_URL = "https://www.google.es/";
 
     public function testGetJsonFromTitle(): void
     {
