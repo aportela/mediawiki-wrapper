@@ -27,8 +27,6 @@ abstract class API
         $this->throttle = new \aportela\SimpleThrottle\Throttle($this->logger, $throttleDelayMS, 5000, 10);
     }
 
-    public function __destruct() {}
-
     /**
      * increment throttle delay (time between api calls)
      * call this function when api returns rate limit exception

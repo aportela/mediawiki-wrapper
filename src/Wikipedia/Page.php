@@ -58,8 +58,7 @@ class Page extends \aportela\MediaWikiWrapper\API
                 }
             } else {
                 if (!empty($cacheData)) {
-                    $json = $this->parseJSONString($cacheData);
-                    return ($json);
+                    return ($this->parseJSONString($cacheData));
                 } else {
                     $this->logger->error("\aportela\MediaWikiWrapper\Wikipedia\Page::getJSONFromTitle - Error: cached data for identifier is empty", [$cacheHash]);
                     throw new \aportela\MediaWikiWrapper\Exception\InvalidCacheException("Cached data for identifier ({$cacheHash}) is empty");
@@ -131,11 +130,11 @@ class Page extends \aportela\MediaWikiWrapper\API
                                 return ($json->query->pages->{$page}->extract);
                             } else {
                                 $this->logger->error("\aportela\MediaWikiWrapper\Wikipedia\Page::getIntroPlainText - Error: missing wikipedia extract json property", [$title, $language->value, $url]);
-                                throw new \aportela\MediaWikiWrapper\Exception\NotFoundException((string)$title);
+                                throw new \aportela\MediaWikiWrapper\Exception\NotFoundException($title);
                             }
                         } else {
                             $this->logger->error("\aportela\MediaWikiWrapper\Wikipedia\Page::getIntroPlainText - Error: missing query page json property", [$title, $language->value, $url]);
-                            throw new \aportela\MediaWikiWrapper\Exception\NotFoundException((string)$title);
+                            throw new \aportela\MediaWikiWrapper\Exception\NotFoundException($title);
                         }
                     } else {
                         $this->logger->error("\aportela\MediaWikiWrapper\Wikipedia\Page::getIntroPlainText - Error: missing query pages json property", [$title, $language->value, $url]);
