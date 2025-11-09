@@ -15,10 +15,10 @@ class Item extends \aportela\MediaWikiWrapper\API
 
     public function getWikipediaTitleFromIdentifier(string $identifier, \aportela\MediaWikiWrapper\Language $language = \aportela\MediaWikiWrapper\Language::ENGLISH): string
     {
-        if (!empty($identifier)) {
+        if ($identifier !== '' && $identifier !== '0') {
             $url = sprintf(self::REST_API_GET_WIKIPEDIA_TITLE, urlencode($identifier), $language->value);
             $responseBody = $this->httpGET($url);
-            if (! empty($responseBody)) {
+            if (!in_array($responseBody, [null, '', '0'], true)) {
                 $json = $this->parseJSONString($responseBody);
                 if (
                     isset($json->entities) &&
@@ -45,10 +45,12 @@ class Item extends \aportela\MediaWikiWrapper\API
     public function getWikipediaTitleFromURL(string $url, \aportela\MediaWikiWrapper\Language $language = \aportela\MediaWikiWrapper\Language::ENGLISH): string
     {
         $urlFields = parse_url($url);
-        if (is_array($urlFields) && isset($urlFields["host"]) && $urlFields["host"] == "www.wikidata.org" && isset($urlFields["path"]) && ! empty($urlFields["path"])) {
+        if (
+            is_array($urlFields) && isset($urlFields["host"]) && $urlFields["host"] == "www.wikidata.org" && isset($urlFields["path"]) &&  ($urlFields["path"] !== '' && $urlFields["path"] !== '0')
+        ) {
             $fields = explode("/", $urlFields["path"]);
             $totalFields = count($fields);
-            if ($totalFields == 3 && $fields[1] == "wiki") {
+            if ($totalFields === 3 && $fields[1] == "wiki") {
                 return ($this->getWikipediaTitleFromIdentifier($fields[2], $language));
             } else {
                 $this->logger->error(\aportela\MediaWikiWrapper\Wikidata\Item::class . '::setItemFromURL - Error: invalid URL: ' . $url);

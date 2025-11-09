@@ -18,6 +18,7 @@ abstract class API
      */
     // TODO
     private const MIN_THROTTLE_DELAY_MS = 20;
+
      // min allowed: 50 requests per second
     public const DEFAULT_THROTTLE_DELAY_MS = 1000; // default: 1 request per second
 
@@ -60,14 +61,14 @@ abstract class API
 
     protected function setCacheFormat(\aportela\SimpleFSCache\CacheFormat $cacheFormat): void
     {
-        if ($this->cache !== null) {
+        if ($this->cache instanceof \aportela\SimpleFSCache\Cache) {
             $this->cache->setFormat($cacheFormat);
         }
     }
 
     protected function saveCache(string $hash, string $raw): bool
     {
-        if ($this->cache !== null) {
+        if ($this->cache instanceof \aportela\SimpleFSCache\Cache) {
             return ($this->cache->set($hash, $raw));
         } else {
             return (false);
@@ -76,7 +77,7 @@ abstract class API
 
     protected function getCache(string $hash): bool|string
     {
-        if ($this->cache !== null) {
+        if ($this->cache instanceof \aportela\SimpleFSCache\Cache) {
             $cacheData = $this->cache->get($hash, false);
             if (is_string($cacheData)) {
                 return ($cacheData);
@@ -97,13 +98,13 @@ abstract class API
         try {
             $this->checkThrottle();
             $response = $this->http->GET($url);
-            if ($response->code == 200) {
+            if ($response->code === 200) {
                 $this->resetThrottle();
                 return ($response->body);
-            } elseif ($response->code == 404) {
+            } elseif ($response->code === 404) {
                 $this->logger->error("\aportela\MediaWikiWrapper\Entity::httpGET - Error opening URL", [$url, $response->code, $response->body]);
                 throw new \aportela\MediaWikiWrapper\Exception\NotFoundException('Error opening URL: ' . $url, $response->code);
-            } elseif ($response->code == 503) {
+            } elseif ($response->code === 503) {
                 $this->incrementThrottle();
                 $this->logger->error("\aportela\MediaWikiWrapper\Entity::httpGET - Error opening URL", [$url, $response->code, $response->body]);
                 throw new \aportela\MediaWikiWrapper\Exception\RateLimitExceedException('Error opening URL: ' . $url, $response->code);
@@ -120,18 +121,16 @@ abstract class API
 
     protected function parseJSONString(string $raw): object
     {
-        if (! empty($raw)) {
+        if ($raw !== '' && $raw !== '0') {
             $json = json_decode($raw);
-            if (json_last_error() != JSON_ERROR_NONE) {
+            if (json_last_error() !== JSON_ERROR_NONE) {
                 $this->logger->error(\aportela\MediaWikiWrapper\API::class . '::parseJSONString - Error decoding json string', [json_last_error_msg(), json_last_error()]);
                 throw new \aportela\MediaWikiWrapper\Exception\InvalidJSONException(json_last_error_msg(), json_last_error());
+            } elseif (is_object($json)) {
+                return ($json);
             } else {
-                if (is_object($json)) {
-                    return ($json);
-                } else {
-                    $this->logger->error(\aportela\MediaWikiWrapper\API::class . '::parseJSONString - Error decoding json string (invalid/null object)');
-                    throw new \aportela\MediaWikiWrapper\Exception\InvalidJSONException("Error decoding json string (invalid/null object)");
-                }
+                $this->logger->error(\aportela\MediaWikiWrapper\API::class . '::parseJSONString - Error decoding json string (invalid/null object)');
+                throw new \aportela\MediaWikiWrapper\Exception\InvalidJSONException("Error decoding json string (invalid/null object)");
             }
         } else {
             $this->logger->error(\aportela\MediaWikiWrapper\API::class . '::parseJSONString - Error decoding json string (empty string)');

@@ -76,27 +76,25 @@ class File extends \aportela\MediaWikiWrapper\API
 
     public function get(string $title): void
     {
-        if (! empty($title)) {
+        if ($title !== '' && $title !== '0') {
             $url = sprintf(self::REST_API_FILE_GET, rawurlencode($title));
             $this->setCacheFormat(\aportela\SimpleFSCache\CacheFormat::JSON);
             $cacheHash = md5($url);
             $cacheData = $this->getCache($cacheHash);
             if (! is_string($cacheData)) {
                 $responseBody = $this->httpGET($url);
-                if (! empty($responseBody)) {
+                if (!in_array($responseBody, [null, '', '0'], true)) {
                     $this->saveCache($cacheHash, $responseBody);
                     $this->parseGetData($responseBody);
                 } else {
                     $this->logger->error(\aportela\MediaWikiWrapper\Wikipedia\File::class . '::get - Error: empty body on API response', [$url]);
                     throw new \aportela\MediaWikiWrapper\Exception\InvalidAPIResponse('Empty body on API response for URL: ' . $url);
                 }
+            } elseif ($cacheData !== '' && $cacheData !== '0') {
+                $this->parseGetData($cacheData);
             } else {
-                if (!empty($cacheData)) {
-                    $this->parseGetData($cacheData);
-                } else {
-                    $this->logger->error(\aportela\MediaWikiWrapper\Wikipedia\File::class . '::get - Error: cached data for identifier is empty', [$cacheHash]);
-                    throw new \aportela\MediaWikiWrapper\Exception\InvalidCacheException(sprintf('Cached data for identifier (%s) is empty', $cacheHash));
-                }
+                $this->logger->error(\aportela\MediaWikiWrapper\Wikipedia\File::class . '::get - Error: cached data for identifier is empty', [$cacheHash]);
+                throw new \aportela\MediaWikiWrapper\Exception\InvalidCacheException(sprintf('Cached data for identifier (%s) is empty', $cacheHash));
             }
         } else {
             $this->logger->error(\aportela\MediaWikiWrapper\Wikipedia\File::class . '::get - Error: empty title');
