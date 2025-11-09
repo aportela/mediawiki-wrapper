@@ -9,7 +9,9 @@ class File extends \aportela\MediaWikiWrapper\API
     public const REST_API_FILE_GET = "https://commons.wikimedia.org/w/rest.php/v1/file/File:%s";
 
     protected ?\aportela\MediaWikiWrapper\FileInformation $prefered = null;
+    
     protected ?\aportela\MediaWikiWrapper\FileInformation $original = null;
+    
     protected ?\aportela\MediaWikiWrapper\FileInformation $thumbnail = null;
 
     public function __construct(\Psr\Log\LoggerInterface $logger, int $throttleDelayMS = self::DEFAULT_THROTTLE_DELAY_MS, ?\aportela\SimpleFSCache\Cache $cache = null)
@@ -36,6 +38,7 @@ class File extends \aportela\MediaWikiWrapper\API
                 $json->preferred->url
             );
         }
+        
         if (
             isset($json->original) &&
             is_object($json->original) &&
@@ -52,6 +55,7 @@ class File extends \aportela\MediaWikiWrapper\API
                 $json->original->url
             );
         }
+        
         if (
             isset($json->thumbnail) &&
             is_object($json->thumbnail) &&
@@ -83,19 +87,19 @@ class File extends \aportela\MediaWikiWrapper\API
                     $this->saveCache($cacheHash, $responseBody);
                     $this->parseGetData($responseBody);
                 } else {
-                    $this->logger->error("\aportela\MediaWikiWrapper\Wikipedia\File::get - Error: empty body on API response", [$url]);
-                    throw new \aportela\MediaWikiWrapper\Exception\InvalidAPIResponse("Empty body on API response for URL: {$url}");
+                    $this->logger->error(\aportela\MediaWikiWrapper\Wikipedia\File::class . '::get - Error: empty body on API response', [$url]);
+                    throw new \aportela\MediaWikiWrapper\Exception\InvalidAPIResponse('Empty body on API response for URL: ' . $url);
                 }
             } else {
                 if (!empty($cacheData)) {
                     $this->parseGetData($cacheData);
                 } else {
-                    $this->logger->error("\aportela\MediaWikiWrapper\Wikipedia\File::get - Error: cached data for identifier is empty", [$cacheHash]);
-                    throw new \aportela\MediaWikiWrapper\Exception\InvalidCacheException("Cached data for identifier ({$cacheHash}) is empty");
+                    $this->logger->error(\aportela\MediaWikiWrapper\Wikipedia\File::class . '::get - Error: cached data for identifier is empty', [$cacheHash]);
+                    throw new \aportela\MediaWikiWrapper\Exception\InvalidCacheException(sprintf('Cached data for identifier (%s) is empty', $cacheHash));
                 }
             }
         } else {
-            $this->logger->error("\aportela\MediaWikiWrapper\Wikipedia\File::get - Error: empty title");
+            $this->logger->error(\aportela\MediaWikiWrapper\Wikipedia\File::class . '::get - Error: empty title');
             throw new \InvalidArgumentException("Empty title");
         }
     }
@@ -108,20 +112,24 @@ class File extends \aportela\MediaWikiWrapper\API
                 if ($this->prefered != null) {
                     $url = $this->prefered->url;
                 }
+                
                 break;
             case \aportela\MediaWikiWrapper\FileInformationType::ORIGINAL:
                 if ($this->original != null) {
                     $url = $this->original->url;
                 }
+                
                 break;
             case \aportela\MediaWikiWrapper\FileInformationType::THUMBNAIL:
                 if ($this->thumbnail != null) {
                     $url = $this->thumbnail->url;
                 }
+                
                 break;
             default:
                 throw new \InvalidArgumentException("Invalid informationType");
         }
+        
         return ($url);
     }
 }

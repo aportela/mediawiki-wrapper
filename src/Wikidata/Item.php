@@ -29,15 +29,15 @@ class Item extends \aportela\MediaWikiWrapper\API
                 ) {
                     return ($json->entities->{$identifier}->sitelinks->{$language->value . "wiki"}->title);
                 } else {
-                    $this->logger->error("\aportela\MediaWikiWrapper\Wikidata\Item::getWikipediaTitle - Error: missing wikipedia title json property", [$identifier, $language->value, $url]);
+                    $this->logger->error(\aportela\MediaWikiWrapper\Wikidata\Item::class . '::getWikipediaTitle - Error: missing wikipedia title json property', [$identifier, $language->value, $url]);
                     throw new \aportela\MediaWikiWrapper\Exception\NotFoundException("Error: missing wikipedia title json property");
                 }
             } else {
                 $this->logger->error("\aportela\MediaWikiWrapper\Item::getWikipediaTitle - Error: empty body on API response", [$url]);
-                throw new \aportela\MediaWikiWrapper\Exception\InvalidAPIResponse("Empty body on API response for URL: {$url}");
+                throw new \aportela\MediaWikiWrapper\Exception\InvalidAPIResponse('Empty body on API response for URL: ' . $url);
             }
         } else {
-            $this->logger->error("\aportela\MediaWikiWrapper\Wikidata\Item::setItem - Error: empty identifier");
+            $this->logger->error(\aportela\MediaWikiWrapper\Wikidata\Item::class . '::setItem - Error: empty identifier');
             throw new \InvalidArgumentException("empty identifier");
         }
     }
@@ -51,12 +51,12 @@ class Item extends \aportela\MediaWikiWrapper\API
             if ($totalFields == 3 && $fields[1] == "wiki") {
                 return ($this->getWikipediaTitleFromIdentifier($fields[2], $language));
             } else {
-                $this->logger->error("\aportela\MediaWikiWrapper\Wikidata\Item::setItemFromURL - Error: invalid URL: {$url}");
-                throw new \InvalidArgumentException("Invalid URL: {$url}");
+                $this->logger->error(\aportela\MediaWikiWrapper\Wikidata\Item::class . '::setItemFromURL - Error: invalid URL: ' . $url);
+                throw new \InvalidArgumentException('Invalid URL: ' . $url);
             }
         } else {
-            $this->logger->error("\aportela\MediaWikiWrapper\Wikidata\Item::setItemFromURL - Error: invalid URL: {$url}");
-            throw new \InvalidArgumentException("Invalid URL: {$url}");
+            $this->logger->error(\aportela\MediaWikiWrapper\Wikidata\Item::class . '::setItemFromURL - Error: invalid URL: ' . $url);
+            throw new \InvalidArgumentException('Invalid URL: ' . $url);
         }
     }
 }

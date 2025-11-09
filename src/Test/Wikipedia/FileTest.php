@@ -40,6 +40,7 @@ final class FileTest extends BaseTest
     {
         $file = new \aportela\MediaWikiWrapper\Wikipedia\File(self::$logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
         $file->get(self::EXISTENT_FILE_TITLE);
+        
         $url = $file->getURL(\aportela\MediaWikiWrapper\FileInformationType::PREFERRED);
         $this->assertNotEmpty($url);
         $this->assertTrue(filter_var($url, FILTER_VALIDATE_URL) !== false);
@@ -49,6 +50,7 @@ final class FileTest extends BaseTest
     {
         $file = new \aportela\MediaWikiWrapper\Wikipedia\File(self::$logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
         $file->get(self::EXISTENT_FILE_TITLE);
+        
         $url = $file->getURL(\aportela\MediaWikiWrapper\FileInformationType::ORIGINAL);
         $this->assertNotEmpty($url);
         $this->assertTrue(filter_var($url, FILTER_VALIDATE_URL) !== false);
@@ -58,6 +60,7 @@ final class FileTest extends BaseTest
     {
         $file = new \aportela\MediaWikiWrapper\Wikipedia\File(self::$logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
         $file->get(self::EXISTENT_FILE_TITLE);
+        
         $url = $file->getURL(\aportela\MediaWikiWrapper\FileInformationType::THUMBNAIL);
         $this->assertNotEmpty($url);
         $this->assertTrue(filter_var($url, FILTER_VALIDATE_URL) !== false);

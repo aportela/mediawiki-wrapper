@@ -7,8 +7,11 @@ namespace aportela\MediaWikiWrapper\Wikipedia;
 class Page extends \aportela\MediaWikiWrapper\API
 {
     public const REST_API_PAGE_HTML = "https://%s.wikipedia.org/w/rest.php/v1/page/%s/html";
+    
     public const REST_API_PAGE_JSON = "https://%s.wikipedia.org/w/rest.php/v1/page/%s";
+    
     public const API_TEXTEXTRACTS_EXTENSION_PAGE_INTRO = "https://%s.wikipedia.org/w/api.php?format=%s&action=query&prop=extracts&exintro&explaintext&redirects=1&titles=%s";
+    
     /*
     const REST_API_PAGE_LINKS_LANGUAGES = "https://en.wikipedia.org/w/rest.php/v1/page/Jupiter/links/language";
     const REST_API_PAGE_LINKS_FILES = "https://en.wikipedia.org/w/rest.php/v1/page/Jupiter/links/media";
@@ -32,12 +35,12 @@ class Page extends \aportela\MediaWikiWrapper\API
             if ($totalFields == 3 && $fields[1] == "wiki") {
                 return ($fields[2]);
             } else {
-                $this->logger->error("\aportela\MediaWikiWrapper\Wikipedia\Page::setURL - Invalid URL: {$url}");
-                throw new \InvalidArgumentException("Invalid URL: {$url}");
+                $this->logger->error(\aportela\MediaWikiWrapper\Wikipedia\Page::class . '::setURL - Invalid URL: ' . $url);
+                throw new \InvalidArgumentException('Invalid URL: ' . $url);
             }
         } else {
-            $this->logger->error("\aportela\MediaWikiWrapper\Wikipedia\Page::setURL - Invalid URL: {$url}");
-            throw new \InvalidArgumentException("Invalid URL: {$url}");
+            $this->logger->error(\aportela\MediaWikiWrapper\Wikipedia\Page::class . '::setURL - Invalid URL: ' . $url);
+            throw new \InvalidArgumentException('Invalid URL: ' . $url);
         }
     }
 
@@ -56,18 +59,18 @@ class Page extends \aportela\MediaWikiWrapper\API
                     return ($json);
                 } else {
                     $this->logger->error("\aportela\MediaWikiWrapper\Page::get - Error: empty body on API response", [$url]);
-                    throw new \aportela\MediaWikiWrapper\Exception\InvalidAPIResponse("Empty body on API response for URL: {$url}");
+                    throw new \aportela\MediaWikiWrapper\Exception\InvalidAPIResponse('Empty body on API response for URL: ' . $url);
                 }
             } else {
                 if (!empty($cacheData)) {
                     return ($this->parseJSONString($cacheData));
                 } else {
-                    $this->logger->error("\aportela\MediaWikiWrapper\Wikipedia\Page::getJSONFromTitle - Error: cached data for identifier is empty", [$cacheHash]);
-                    throw new \aportela\MediaWikiWrapper\Exception\InvalidCacheException("Cached data for identifier ({$cacheHash}) is empty");
+                    $this->logger->error(\aportela\MediaWikiWrapper\Wikipedia\Page::class . '::getJSONFromTitle - Error: cached data for identifier is empty', [$cacheHash]);
+                    throw new \aportela\MediaWikiWrapper\Exception\InvalidCacheException(sprintf('Cached data for identifier (%s) is empty', $cacheHash));
                 }
             }
         } else {
-            $this->logger->error("\aportela\MediaWikiWrapper\Wikipedia\Page::getJSONFromTitle - Error: empty title");
+            $this->logger->error(\aportela\MediaWikiWrapper\Wikipedia\Page::class . '::getJSONFromTitle - Error: empty title');
             throw new \InvalidArgumentException("Empty title");
         }
     }
@@ -90,19 +93,19 @@ class Page extends \aportela\MediaWikiWrapper\API
                     $this->saveCache($cacheHash, $responseBody);
                     return ($responseBody);
                 } else {
-                    $this->logger->error("\aportela\MediaWikiWrapper\Wikipedia\Page::getHTMLFromTitle - Error: empty body on API response", [$url]);
-                    throw new \aportela\MediaWikiWrapper\Exception\InvalidAPIResponse("Empty body on API response for URL: {$url}");
+                    $this->logger->error(\aportela\MediaWikiWrapper\Wikipedia\Page::class . '::getHTMLFromTitle - Error: empty body on API response', [$url]);
+                    throw new \aportela\MediaWikiWrapper\Exception\InvalidAPIResponse('Empty body on API response for URL: ' . $url);
                 }
             } else {
                 if (!empty($cacheData)) {
                     return ($cacheData);
                 } else {
-                    $this->logger->error("\aportela\MediaWikiWrapper\Wikipedia\Page::getHTMLFromTitle - Error: cached data for identifier is empty", [$cacheHash]);
-                    throw new \aportela\MediaWikiWrapper\Exception\InvalidCacheException("Cached data for identifier ({$cacheHash}) is empty");
+                    $this->logger->error(\aportela\MediaWikiWrapper\Wikipedia\Page::class . '::getHTMLFromTitle - Error: cached data for identifier is empty', [$cacheHash]);
+                    throw new \aportela\MediaWikiWrapper\Exception\InvalidCacheException(sprintf('Cached data for identifier (%s) is empty', $cacheHash));
                 }
             }
         } else {
-            $this->logger->error("\aportela\MediaWikiWrapper\Wikipedia\Page::getHTMLFromTitle - Error: empty title");
+            $this->logger->error(\aportela\MediaWikiWrapper\Wikipedia\Page::class . '::getHTMLFromTitle - Error: empty title');
             throw new \InvalidArgumentException("Empty title");
         }
     }
@@ -131,31 +134,31 @@ class Page extends \aportela\MediaWikiWrapper\API
                                 $this->saveCache($cacheHash, $json->query->pages->{$page}->extract);
                                 return ($json->query->pages->{$page}->extract);
                             } else {
-                                $this->logger->error("\aportela\MediaWikiWrapper\Wikipedia\Page::getIntroPlainText - Error: missing wikipedia extract json property", [$title, $language->value, $url]);
+                                $this->logger->error(\aportela\MediaWikiWrapper\Wikipedia\Page::class . '::getIntroPlainText - Error: missing wikipedia extract json property', [$title, $language->value, $url]);
                                 throw new \aportela\MediaWikiWrapper\Exception\NotFoundException($title);
                             }
                         } else {
-                            $this->logger->error("\aportela\MediaWikiWrapper\Wikipedia\Page::getIntroPlainText - Error: missing query page json property", [$title, $language->value, $url]);
+                            $this->logger->error(\aportela\MediaWikiWrapper\Wikipedia\Page::class . '::getIntroPlainText - Error: missing query page json property', [$title, $language->value, $url]);
                             throw new \aportela\MediaWikiWrapper\Exception\NotFoundException($title);
                         }
                     } else {
-                        $this->logger->error("\aportela\MediaWikiWrapper\Wikipedia\Page::getIntroPlainText - Error: missing query pages json property", [$title, $language->value, $url]);
+                        $this->logger->error(\aportela\MediaWikiWrapper\Wikipedia\Page::class . '::getIntroPlainText - Error: missing query pages json property', [$title, $language->value, $url]);
                         throw new \aportela\MediaWikiWrapper\Exception\NotFoundException("invalid object");
                     }
                 } else {
-                    $this->logger->error("\aportela\MediaWikiWrapper\Wikipedia\Page::getIntroPlainTextFromTitle - Error: empty body on API response", [$url]);
-                    throw new \aportela\MediaWikiWrapper\Exception\InvalidAPIResponse("Empty body on API response for URL: {$url}");
+                    $this->logger->error(\aportela\MediaWikiWrapper\Wikipedia\Page::class . '::getIntroPlainTextFromTitle - Error: empty body on API response', [$url]);
+                    throw new \aportela\MediaWikiWrapper\Exception\InvalidAPIResponse('Empty body on API response for URL: ' . $url);
                 }
             } else {
                 if (!empty($cacheData)) {
                     return ($cacheData);
                 } else {
-                    $this->logger->error("\aportela\MediaWikiWrapper\Wikipedia\Page::getIntroPlainTextFromTitle - Error: cached data for identifier is empty", [$cacheHash]);
-                    throw new \aportela\MediaWikiWrapper\Exception\InvalidCacheException("Cached data for identifier ({$cacheHash}) is empty");
+                    $this->logger->error(\aportela\MediaWikiWrapper\Wikipedia\Page::class . '::getIntroPlainTextFromTitle - Error: cached data for identifier is empty', [$cacheHash]);
+                    throw new \aportela\MediaWikiWrapper\Exception\InvalidCacheException(sprintf('Cached data for identifier (%s) is empty', $cacheHash));
                 }
             }
         } else {
-            $this->logger->error("\aportela\MediaWikiWrapper\Wikipedia\Page::getIntroPlainTextFromTitle - Error: empty title");
+            $this->logger->error(\aportela\MediaWikiWrapper\Wikipedia\Page::class . '::getIntroPlainTextFromTitle - Error: empty title');
             throw new \InvalidArgumentException("Empty title");
         }
     }
