@@ -53,10 +53,10 @@ abstract class API
         $this->throttle->throttle();
     }
 
-    protected function setCacheFormat(\aportela\SimpleFSCache\CacheFormat $format): void
+    protected function setCacheFormat(\aportela\SimpleFSCache\CacheFormat $cacheFormat): void
     {
         if ($this->cache !== null) {
-            $this->cache->setFormat($format);
+            $this->cache->setFormat($cacheFormat);
         }
     }
 

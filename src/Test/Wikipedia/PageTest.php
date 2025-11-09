@@ -15,11 +15,11 @@ class PageTest extends BaseTest
 
     public function testGetJsonFromTitle(): void
     {
-        $p = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
+        $page = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
         /**
          * @var \stdClass $obj
          */
-        $obj = $p->getJSONFromTitle(self::EXISTENT_PAGE_TITLE, self::EXISTENT_PAGE_LANGUAGE);
+        $obj = $page->getJSONFromTitle(self::EXISTENT_PAGE_TITLE, self::EXISTENT_PAGE_LANGUAGE);
         $this->assertIsInt($obj->id);
         $this->assertEquals($obj->id, 38930);
         $this->assertIsString($obj->title);
@@ -31,17 +31,17 @@ class PageTest extends BaseTest
     public function testGetJsonMissingTitle(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $p = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
-        $p->getJSONFromTitle(self::INVALID_PAGE_TITLE, self::EXISTENT_PAGE_LANGUAGE);
+        $page = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
+        $page->getJSONFromTitle(self::INVALID_PAGE_TITLE, self::EXISTENT_PAGE_LANGUAGE);
     }
 
     public function testGetJsonFromUrl(): void
     {
-        $p = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
+        $page = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
         /**
          * @var \stdClass $object
          */
-        $object = $p->getJSONFromURL(self::EXISTENT_PAGE_URL, self::EXISTENT_PAGE_LANGUAGE);
+        $object = $page->getJSONFromURL(self::EXISTENT_PAGE_URL, self::EXISTENT_PAGE_LANGUAGE);
         $this->assertEquals(self::EXISTENT_PAGE_TITLE, $object->title);
     }
 
@@ -49,16 +49,16 @@ class PageTest extends BaseTest
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage("Invalid URL: " . self::NON_EXISTENT_WIKIPEDIA_PAGE_URL);
-        $p = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
-        $p->getJSONFromURL(self::NON_EXISTENT_WIKIPEDIA_PAGE_URL, self::EXISTENT_PAGE_LANGUAGE);
+        $page = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
+        $page->getJSONFromURL(self::NON_EXISTENT_WIKIPEDIA_PAGE_URL, self::EXISTENT_PAGE_LANGUAGE);
     }
 
     public function testGetJsonFromInvalidUrl(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage("Invalid URL: " . self::NON_EXISTENT_PAGE_URL);
-        $p = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
-        $p->getJSONFromURL(self::NON_EXISTENT_PAGE_URL, self::EXISTENT_PAGE_LANGUAGE);
+        $page = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
+        $page->getJSONFromURL(self::NON_EXISTENT_PAGE_URL, self::EXISTENT_PAGE_LANGUAGE);
     }
 
     public function testGetJsonFromTitleNotFound(): void
@@ -67,8 +67,8 @@ class PageTest extends BaseTest
         $this->expectException(\aportela\MediaWikiWrapper\Exception\NotFoundException::class);
         $this->expectExceptionMessage($title);
         $this->expectExceptionMessage(rawurlencode($title));
-        $p = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
-        $p->getJSONFromTitle($title, self::EXISTENT_PAGE_LANGUAGE);
+        $page = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
+        $page->getJSONFromTitle($title, self::EXISTENT_PAGE_LANGUAGE);
     }
 
     public function testGetJsonFromUrlNotFound(): void
@@ -77,43 +77,43 @@ class PageTest extends BaseTest
         $url = "https://en.wikipedia.org/wiki/" . $title;
         $this->expectException(\aportela\MediaWikiWrapper\Exception\NotFoundException::class);
         $this->expectExceptionMessage($title);
-        $p = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
-        $p->getJSONFromURL($url, self::EXISTENT_PAGE_LANGUAGE);
+        $page = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
+        $page->getJSONFromURL($url, self::EXISTENT_PAGE_LANGUAGE);
     }
 
     public function testGetHtmlFromTitle(): void
     {
-        $p = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
-        $this->assertStringContainsString("<title>Jupiter</title>", $p->getHTMLFromTitle(self::EXISTENT_PAGE_TITLE, self::EXISTENT_PAGE_LANGUAGE));
+        $page = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
+        $this->assertStringContainsString("<title>Jupiter</title>", $page->getHTMLFromTitle(self::EXISTENT_PAGE_TITLE, self::EXISTENT_PAGE_LANGUAGE));
     }
 
     public function testGetHtmlMissingTitle(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $p = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
-        $p->getHTMLFromTitle(self::INVALID_PAGE_TITLE, self::EXISTENT_PAGE_LANGUAGE);
+        $page = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
+        $page->getHTMLFromTitle(self::INVALID_PAGE_TITLE, self::EXISTENT_PAGE_LANGUAGE);
     }
 
     public function testGetHtmlFromUrl(): void
     {
-        $p = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
-        $this->assertStringContainsString("<title>Jupiter</title>", $p->getHTMLFromURL(self::EXISTENT_PAGE_URL, self::EXISTENT_PAGE_LANGUAGE));
+        $page = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
+        $this->assertStringContainsString("<title>Jupiter</title>", $page->getHTMLFromURL(self::EXISTENT_PAGE_URL, self::EXISTENT_PAGE_LANGUAGE));
     }
 
     public function testGetHtmlFromWikipediaInvalidUrl(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage(self::NON_EXISTENT_WIKIPEDIA_PAGE_URL);
-        $p = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
-        $p->getHTMLFromURL(self::NON_EXISTENT_WIKIPEDIA_PAGE_URL, self::EXISTENT_PAGE_LANGUAGE);
+        $page = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
+        $page->getHTMLFromURL(self::NON_EXISTENT_WIKIPEDIA_PAGE_URL, self::EXISTENT_PAGE_LANGUAGE);
     }
 
     public function testGetHtmlFromInvalidUrl(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage(self::NON_EXISTENT_PAGE_URL);
-        $p = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
-        $p->getHTMLFromURL(self::NON_EXISTENT_PAGE_URL, self::EXISTENT_PAGE_LANGUAGE);
+        $page = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
+        $page->getHTMLFromURL(self::NON_EXISTENT_PAGE_URL, self::EXISTENT_PAGE_LANGUAGE);
     }
 
     public function testGetHtmlFromTitleNotFound(): void
@@ -122,8 +122,8 @@ class PageTest extends BaseTest
         $this->expectException(\aportela\MediaWikiWrapper\Exception\NotFoundException::class);
         $this->expectExceptionMessage($title);
         $this->expectExceptionMessage(rawurlencode($title));
-        $p = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
-        $p->getHTMLFromTitle($title, self::EXISTENT_PAGE_LANGUAGE);
+        $page = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
+        $page->getHTMLFromTitle($title, self::EXISTENT_PAGE_LANGUAGE);
     }
 
     public function testGetHtmlFromUrlNotFound(): void
@@ -132,43 +132,43 @@ class PageTest extends BaseTest
         $url = "https://en.wikipedia.org/wiki/" . $title;
         $this->expectException(\aportela\MediaWikiWrapper\Exception\NotFoundException::class);
         $this->expectExceptionMessage($title);
-        $p = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
-        $p->getHTMLFromURL($url, self::EXISTENT_PAGE_LANGUAGE);
+        $page = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
+        $page->getHTMLFromURL($url, self::EXISTENT_PAGE_LANGUAGE);
     }
 
     public function testGetIntroPlainTextFromTitle(): void
     {
-        $p = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
-        $this->assertStringContainsString(self::EXISTENT_PAGE_TITLE, $p->getIntroPlainTextFromTitle(self::EXISTENT_PAGE_TITLE, self::EXISTENT_PAGE_LANGUAGE));
+        $page = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
+        $this->assertStringContainsString(self::EXISTENT_PAGE_TITLE, $page->getIntroPlainTextFromTitle(self::EXISTENT_PAGE_TITLE, self::EXISTENT_PAGE_LANGUAGE));
     }
 
     public function testGetIntroPlainTextFromTitleMissingTitle(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $p = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
-        $p->getIntroPlainTextFromTitle(self::INVALID_PAGE_TITLE, self::EXISTENT_PAGE_LANGUAGE);
+        $page = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
+        $page->getIntroPlainTextFromTitle(self::INVALID_PAGE_TITLE, self::EXISTENT_PAGE_LANGUAGE);
     }
 
     public function testGetIntroPlainTextFromUrl(): void
     {
-        $p = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
-        $this->assertStringContainsString(self::EXISTENT_PAGE_TITLE, $p->getIntroPlainTextFromURL(self::EXISTENT_PAGE_URL, self::EXISTENT_PAGE_LANGUAGE));
+        $page = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
+        $this->assertStringContainsString(self::EXISTENT_PAGE_TITLE, $page->getIntroPlainTextFromURL(self::EXISTENT_PAGE_URL, self::EXISTENT_PAGE_LANGUAGE));
     }
 
     public function testGetIntroPlainTextFromWikipediaInvalidUrl(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage(self::NON_EXISTENT_WIKIPEDIA_PAGE_URL);
-        $p = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
-        $p->getIntroPlainTextFromURL(self::NON_EXISTENT_WIKIPEDIA_PAGE_URL, self::EXISTENT_PAGE_LANGUAGE);
+        $page = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
+        $page->getIntroPlainTextFromURL(self::NON_EXISTENT_WIKIPEDIA_PAGE_URL, self::EXISTENT_PAGE_LANGUAGE);
     }
 
     public function testGetIntroPlainTextFromInvalidUrl(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage(self::NON_EXISTENT_PAGE_URL);
-        $p = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
-        $p->getIntroPlainTextFromURL(self::NON_EXISTENT_PAGE_URL, self::EXISTENT_PAGE_LANGUAGE);
+        $page = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
+        $page->getIntroPlainTextFromURL(self::NON_EXISTENT_PAGE_URL, self::EXISTENT_PAGE_LANGUAGE);
     }
 
     public function testGetIntroPlainTextFromTitleNotFound(): void
@@ -177,8 +177,8 @@ class PageTest extends BaseTest
         $this->expectException(\aportela\MediaWikiWrapper\Exception\NotFoundException::class);
         $this->expectExceptionMessage($title);
         $this->expectExceptionMessage(rawurlencode($title));
-        $p = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
-        $p->getIntroPlainTextFromTitle($title, self::EXISTENT_PAGE_LANGUAGE);
+        $page = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
+        $page->getIntroPlainTextFromTitle($title, self::EXISTENT_PAGE_LANGUAGE);
     }
 
     public function testGetIntroPlainTextFromUrlNotFound(): void
@@ -187,7 +187,7 @@ class PageTest extends BaseTest
         $url = "https://en.wikipedia.org/wiki/" . $title;
         $this->expectException(\aportela\MediaWikiWrapper\Exception\NotFoundException::class);
         $this->expectExceptionMessage($title);
-        $p = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
-        $p->getIntroPlainTextFromURL($url, self::EXISTENT_PAGE_LANGUAGE);
+        $page = new \aportela\MediaWikiWrapper\Wikipedia\Page(self::$logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);
+        $page->getIntroPlainTextFromURL($url, self::EXISTENT_PAGE_LANGUAGE);
     }
 }
