@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace aportela\MediaWikiWrapper\Wikipedia;
 
 class Page extends \aportela\MediaWikiWrapper\API

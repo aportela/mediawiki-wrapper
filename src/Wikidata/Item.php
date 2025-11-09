@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace aportela\MediaWikiWrapper\Wikidata;
 
 class Item extends \aportela\MediaWikiWrapper\API

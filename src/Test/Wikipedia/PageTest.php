@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace aportela\MediaWikiWrapper\Test\Wikipedia;
 
 require_once dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . "autoload.php";
 
-class PageTest extends BaseTest
+final class PageTest extends BaseTest
 {
     private const string EXISTENT_PAGE_TITLE = "Jupiter";
     private const EXISTENT_PAGE_LANGUAGE = \aportela\MediaWikiWrapper\Language::ENGLISH;

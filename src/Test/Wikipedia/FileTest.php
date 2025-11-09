@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace aportela\MediaWikiWrapper\Test\Wikipedia;
 
 require_once dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . "autoload.php";
 
-class FileTest extends BaseTest
+final class FileTest extends BaseTest
 {
     private const string EXISTENT_FILE_TITLE = "Commons-logo.svg";
 

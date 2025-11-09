@@ -15,6 +15,6 @@ return RectorConfig::configure()
         //codingStyle: true,
         naming: true,
         privatization: true,
-        //typeDeclarations: true,
-        //rectorPreset: true,
+        typeDeclarations: true,
+        rectorPreset: true,
     );

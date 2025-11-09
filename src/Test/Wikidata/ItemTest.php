@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace aportela\MediaWikiWrapper\Test\Wikipedia;
 
 require_once dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . "autoload.php";
 
-class ItemTest extends BaseTest
+final class ItemTest extends BaseTest
 {
     private const string INVALID_ITEM_IDENTIFIER = "";
     private const string INVALID_ITEM_WIKIDATA_URL = "https://www.wikidata.org/wiki_NOT_FOUND/Q319";
