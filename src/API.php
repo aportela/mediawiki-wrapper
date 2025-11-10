@@ -7,7 +7,7 @@ namespace aportela\MediaWikiWrapper;
 abstract class API
 {
     protected \aportela\HTTPRequestWrapper\HTTPRequest $http;
-    
+
     private readonly \aportela\SimpleThrottle\Throttle $throttle;
 
     // TODO: API TOKENS (more api requests allowed) https://api.wikimedia.org/wiki/Authentication#Personal_API_tokens
@@ -19,7 +19,7 @@ abstract class API
     // TODO
     private const MIN_THROTTLE_DELAY_MS = 20;
 
-     // min allowed: 50 requests per second
+    // min allowed: 50 requests per second
     public const DEFAULT_THROTTLE_DELAY_MS = 1000; // default: 1 request per second
 
     public function __construct(protected \Psr\Log\LoggerInterface $logger, protected \aportela\MediaWikiWrapper\APIType $apiType = \aportela\MediaWikiWrapper\APIType::REST, int $throttleDelayMS = self::DEFAULT_THROTTLE_DELAY_MS, private readonly ?\aportela\SimpleFSCache\Cache $cache = null)
@@ -29,7 +29,7 @@ abstract class API
             $this->logger->critical(\aportela\MediaWikiWrapper\API::class . '::__construct - ERROR: invalid throttleDelayMS', [$throttleDelayMS, self::MIN_THROTTLE_DELAY_MS]);
             throw new \aportela\MediaWikiWrapper\Exception\InvalidThrottleMsDelayException("min throttle delay ms required: " . self::MIN_THROTTLE_DELAY_MS);
         }
-        
+
         $this->throttle = new \aportela\SimpleThrottle\Throttle($this->logger, $throttleDelayMS, 5000, 10);
     }
 

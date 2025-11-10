@@ -9,19 +9,19 @@ require_once dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SE
 final class ItemTest extends BaseTest
 {
     private const string INVALID_ITEM_IDENTIFIER = "";
-    
+
     private const string INVALID_ITEM_WIKIDATA_URL = "https://www.wikidata.org/wiki_NOT_FOUND/Q319";
-    
+
     private const string INVALID_ITEM_URL = "https://www.google.es/";
-    
+
     private const string EXISTENT_ITEM_IDENTIFIER = "Q319";
-    
+
     private const string EXISTENT_ITEM_URL = "https://www.wikidata.org/wiki/Q319";
-    
+
     private const EXISTENT_ITEM_WIKIPEDIA_LANG = \aportela\MediaWikiWrapper\Language::ENGLISH;
-    
+
     private const string EXISTENT_ITEM_WIKIPEDIA_TITLE = "Jupiter";
-    
+
     public function testGetWikipediaTitleFromItem(): void
     {
         $item = new \aportela\MediaWikiWrapper\Wikidata\Item(self::$logger, \aportela\MediaWikiWrapper\API::DEFAULT_THROTTLE_DELAY_MS, self::$cache);

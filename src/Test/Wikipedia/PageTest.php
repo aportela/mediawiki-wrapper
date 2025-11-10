@@ -9,15 +9,15 @@ require_once dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SE
 final class PageTest extends BaseTest
 {
     private const string EXISTENT_PAGE_TITLE = "Jupiter";
-    
+
     private const EXISTENT_PAGE_LANGUAGE = \aportela\MediaWikiWrapper\Language::ENGLISH;
-    
+
     private const string EXISTENT_PAGE_URL = "https://en.wikipedia.org/wiki/Jupiter";
-    
+
     private const string INVALID_PAGE_TITLE = "";
-    
+
     private const string NON_EXISTENT_WIKIPEDIA_PAGE_URL = "https://en.wikipedia.org/wiki_NOT_FOUND/Jupiter";
-    
+
     private const string NON_EXISTENT_PAGE_URL = "https://www.google.es/";
 
     public function testGetJsonFromTitle(): void
