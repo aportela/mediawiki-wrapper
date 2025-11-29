@@ -23,10 +23,10 @@ class File extends \aportela\MediaWikiWrapper\API
     {
         $json = $this->parseJSONString($raw);
         if (
-            isset($json->preferred) &&
-            is_object($json->preferred) &&
-            isset($json->preferred->mediatype) && is_string($json->preferred->mediatype) &&
-            isset($json->preferred->url) && is_string($json->preferred->url)
+            isset($json->preferred)
+            && is_object($json->preferred)
+            && isset($json->preferred->mediatype) && is_string($json->preferred->mediatype)
+            && isset($json->preferred->url) && is_string($json->preferred->url)
         ) {
             $this->prefered = new \aportela\MediaWikiWrapper\FileInformation(
                 \aportela\MediaWikiWrapper\FileInformationType::PREFERRED,
@@ -40,10 +40,10 @@ class File extends \aportela\MediaWikiWrapper\API
         }
 
         if (
-            isset($json->original) &&
-            is_object($json->original) &&
-            isset($json->original->mediatype) && is_string($json->original->mediatype) &&
-            isset($json->original->url) && is_string($json->original->url)
+            isset($json->original)
+            && is_object($json->original)
+            && isset($json->original->mediatype) && is_string($json->original->mediatype)
+            && isset($json->original->url) && is_string($json->original->url)
         ) {
             $this->original = new \aportela\MediaWikiWrapper\FileInformation(
                 \aportela\MediaWikiWrapper\FileInformationType::ORIGINAL,
@@ -57,10 +57,10 @@ class File extends \aportela\MediaWikiWrapper\API
         }
 
         if (
-            isset($json->thumbnail) &&
-            is_object($json->thumbnail) &&
-            isset($json->thumbnail->mediatype) && is_string($json->thumbnail->mediatype) &&
-            isset($json->thumbnail->url) && is_string($json->thumbnail->url)
+            isset($json->thumbnail)
+            && is_object($json->thumbnail)
+            && isset($json->thumbnail->mediatype) && is_string($json->thumbnail->mediatype)
+            && isset($json->thumbnail->url) && is_string($json->thumbnail->url)
         ) {
             $this->thumbnail = new \aportela\MediaWikiWrapper\FileInformation(
                 \aportela\MediaWikiWrapper\FileInformationType::THUMBNAIL,

@@ -26,8 +26,8 @@ class Page extends \aportela\MediaWikiWrapper\API
     {
         $urlFields = parse_url($url);
         if (
-            is_array($urlFields) &&
-            isset($urlFields["host"]) && ($urlFields["host"] !== '' && $urlFields["host"] !== '0') && str_ends_with($urlFields["host"], "wikipedia.org") && isset($urlFields["path"]) && ($urlFields["path"] !== '' && $urlFields["path"] !== '0')
+            is_array($urlFields)
+            && isset($urlFields["host"]) && ($urlFields["host"] !== '' && $urlFields["host"] !== '0') && str_ends_with($urlFields["host"], "wikipedia.org") && isset($urlFields["path"]) && ($urlFields["path"] !== '' && $urlFields["path"] !== '0')
         ) {
             $fields = explode("/", $urlFields["path"]);
             $totalFields = count($fields);

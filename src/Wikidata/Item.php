@@ -21,11 +21,11 @@ class Item extends \aportela\MediaWikiWrapper\API
             if (!in_array($responseBody, [null, '', '0'], true)) {
                 $json = $this->parseJSONString($responseBody);
                 if (
-                    isset($json->entities) &&
-                    isset($json->entities->{$identifier}) && is_object($json->entities->{$identifier}) &&
-                    isset($json->entities->{$identifier}->sitelinks) && is_object($json->entities->{$identifier}->sitelinks) &&
-                    isset($json->entities->{$identifier}->sitelinks->{$language->value . "wiki"}) && is_object($json->entities->{$identifier}->sitelinks->{$language->value . "wiki"}) &&
-                    isset($json->entities->{$identifier}->sitelinks->{$language->value . "wiki"}->title) && is_string($json->entities->{$identifier}->sitelinks->{$language->value . "wiki"}->title)
+                    isset($json->entities)
+                    && isset($json->entities->{$identifier}) && is_object($json->entities->{$identifier})
+                    && isset($json->entities->{$identifier}->sitelinks) && is_object($json->entities->{$identifier}->sitelinks)
+                    && isset($json->entities->{$identifier}->sitelinks->{$language->value . "wiki"}) && is_object($json->entities->{$identifier}->sitelinks->{$language->value . "wiki"})
+                    && isset($json->entities->{$identifier}->sitelinks->{$language->value . "wiki"}->title) && is_string($json->entities->{$identifier}->sitelinks->{$language->value . "wiki"}->title)
                 ) {
                     return ($json->entities->{$identifier}->sitelinks->{$language->value . "wiki"}->title);
                 } else {
